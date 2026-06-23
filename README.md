@@ -41,10 +41,10 @@ Edit `dashboard/config.json`:
 }
 ```
 
-## Default Login
+## Login
 
-- **Admin**: Check with system administrator
-- **Employees**: Register at `/register`
+- **Admin**: System administrator creates your account
+- **Employees**: Go to `http://YOUR_SERVER_IP:5000/register` to create your account
 
 ## Support
 

@@ -324,12 +324,14 @@ def ai_chat():
         with open(CONFIG_PATH) as f:
             config = json.load(f)
 
-    api_key = config.get("nvidia_api_key", "")
-    if not api_key:
-        return jsonify({"error": "API key not configured. Ask admin to set it in config.json"}), 500
+    # Support multiple API keys with rotation
+    api_keys = config.get("nvidia_api_keys", [])
+    if not api_keys and config.get("nvidia_api_key"):
+        api_keys = [config["nvidia_api_key"]]
+    if not api_keys:
+        return jsonify({"error": "No API keys configured. Ask admin to add them in config.json"}), 500
 
-    try:
-        system_msg = """You are a helpful AI assistant with file management capabilities. You can:
+    system_msg = """You are a helpful AI assistant with file management capabilities. You can:
 - List files in any directory
 - Move/rename files
 - Create folders
@@ -340,24 +342,31 @@ When a user asks you to organize files, suggest specific actions like:
 
 Be helpful, concise, and friendly. You can also help with general questions, coding, writing, and more."""
 
-        resp = requests.post(NVIDIA_API_URL, headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
-        }, json={
-            "model": NVIDIA_MODEL,
-            "messages": [
-                {"role": "system", "content": system_msg},
-                {"role": "user", "content": message}
-            ],
-            "max_tokens": 1024,
-            "temperature": 0.7
-        }, timeout=30)
-        resp.raise_for_status()
-        result = resp.json()
-        reply = result["choices"][0]["message"]["content"]
-        return jsonify({"reply": reply})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    # Try each API key until one works
+    last_error = None
+    for api_key in api_keys:
+        try:
+            resp = requests.post(NVIDIA_API_URL, headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }, json={
+                "model": NVIDIA_MODEL,
+                "messages": [
+                    {"role": "system", "content": system_msg},
+                    {"role": "user", "content": message}
+                ],
+                "max_tokens": 1024,
+                "temperature": 0.7
+            }, timeout=30)
+            resp.raise_for_status()
+            result = resp.json()
+            reply = result["choices"][0]["message"]["content"]
+            return jsonify({"reply": reply})
+        except Exception as e:
+            last_error = str(e)
+            continue  # Try next key
+    
+    return jsonify({"error": f"All API keys failed. Last error: {last_error}"}), 500
 
 @app.route("/api/config", methods=["GET", "POST"])
 @login_required
