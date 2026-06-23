@@ -1,0 +1,31 @@
+# Sensitive data
+dashboard/config.json
+dashboard/*.db
+*.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+*.egg-info/
+
+# Windows
+Thumbs.db
+Desktop.ini
+*.lnk
+
+# Temp files
+*.tmp
+*.log
+*.zip
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+.DS_Store?

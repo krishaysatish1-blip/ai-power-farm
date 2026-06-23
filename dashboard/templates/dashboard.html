@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Power Farm - Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh}
+.topbar{background:#12121a;border-bottom:1px solid #1e1e2e;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
+.topbar h1{font-size:18px;background:linear-gradient(135deg,#00d4ff,#7b2fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.topbar-right span{color:#888;font-size:13px}
+.logout-btn{background:#2d1b1b;border:1px solid #ff4444;color:#ff6666;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;text-decoration:none}
+.container{max-width:1400px;margin:0 auto;padding:20px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:#12121a;border:1px solid #1e1e2e;border-radius:12px;padding:20px}
+.stat-card .label{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.stat-card .value{font-size:28px;font-weight:700}
+.stat-card .unit{font-size:12px;color:#888;margin-left:4px}
+.stat-green{color:#00ff88}
+.stat-blue{color:#00d4ff}
+.stat-purple{color:#7b2fff}
+.stat-orange{color:#ff8800}
+.section{background:#12121a;border:1px solid #1e1e2e;border-radius:12px;margin-bottom:24px;overflow:hidden}
+.section-header{padding:16px 20px;border-bottom:1px solid #1e1e2e;display:flex;justify-content:space-between;align-items:center}
+.section-header h2{font-size:15px;font-weight:600}
+.section-body{padding:20px}
+.worker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.worker-card{background:#0a0a0f;border:1px solid #1e1e2e;border-radius:10px;padding:16px;position:relative}
+.worker-card .status-dot{width:8px;height:8px;border-radius:50%;position:absolute;top:16px;right:16px}
+.worker-card .status-dot.online{background:#00ff88;box-shadow:0 0 8px #00ff88}
+.worker-card .status-dot.offline{background:#ff4444;box-shadow:0 0 8px #ff4444}
+.worker-card h3{font-size:14px;margin-bottom:12px;padding-right:20px}
+.worker-card .gpu{font-size:12px;color:#00d4ff;margin-bottom:8px}
+.worker-card .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.worker-card .stat{font-size:12px}
+.worker-card .stat span{color:#666}
+.no-workers{text-align:center;color:#666;padding:40px;font-size:14px}
+.chat-panel{display:flex;flex-direction:column;height:400px}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}
+.chat-msg{max-width:80%;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.5}
+.chat-msg.user{align-self:flex-end;background:#7b2fff;color:#fff;border-bottom-right-radius:2px}
+.chat-msg.ai{align-self:flex-start;background:#1a1a2e;border:1px solid #2a2a3e;border-bottom-left-radius:2px}
+.chat-input-row{display:flex;gap:8px;padding:12px 16px;border-top:1px solid #1e1e2e}
+.chat-input-row input{flex:1;padding:10px 14px;background:#0a0a0f;border:1px solid #2a2a3a;border-radius:8px;color:#fff;font-size:13px;outline:none}
+.chat-input-row input:focus{border-color:#7b2fff}
+.chat-input-row button{padding:10px 20px;background:#7b2fff;border:none;border-radius:8px;color:#fff;font-size:13px;cursor:pointer}
+.activity-list{max-height:300px;overflow-y:auto}
+.activity-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1a1a2a;font-size:13px}
+.activity-item:last-child{border-bottom:none}
+.activity-item .user{color:#00d4ff}
+.activity-item .time{color:#666}
+.tabs{display:flex;gap:4px;padding:0 20px;border-bottom:1px solid #1e1e2e}
+.tab{padding:12px 20px;cursor:pointer;font-size:13px;color:#888;border-bottom:2px solid transparent;transition:all .2s}
+.tab:hover{color:#e0e0e0}
+.tab.active{color:#7b2fff;border-bottom-color:#7b2fff}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.user-table{width:100%;border-collapse:collapse}
+.user-table th{text-align:left;padding:10px 12px;font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #1e1e2e}
+.user-table td{padding:10px 12px;font-size:13px;border-bottom:1px solid #1a1a2a}
+.add-user-form{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.add-user-form input,.add-user-form select{padding:8px 12px;background:#0a0a0f;border:1px solid #2a2a3a;border-radius:6px;color:#fff;font-size:13px;outline:none}
+.add-user-form button{padding:8px 16px;background:#7b2fff;border:none;border-radius:6px;color:#fff;font-size:13px;cursor:pointer}
+.del-btn{background:none;border:1px solid #ff4444;color:#ff6666;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:11px}
+.config-row{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.config-row label{font-size:13px;color:#888;min-width:140px}
+.config-row input{flex:1;padding:8px 12px;background:#0a0a0f;border:1px solid #2a2a3a;border-radius:6px;color:#fff;font-size:13px;outline:none}
+.save-btn{padding:8px 20px;background:#00ff88;border:none;border-radius:6px;color:#000;font-size:13px;font-weight:600;cursor:pointer}
+@media(max-width:768px){.stats-row{grid-template-columns:1fr 1fr}.worker-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="topbar">
+<h1>AI POWER FARM</h1>
+<div class="topbar-right">
+<span>Welcome, <strong>{{ username }}</strong> ({{ role }})</span>
+<a href="/logout" class="logout-btn">Sign Out</a>
+</div>
+</div>
+
+<div class="container">
+<div class="stats-row">
+<div class="stat-card"><div class="label">Total Hashrate</div><div class="value stat-green" id="stat-hashrate">0<span class="unit">MH/s</span></div></div>
+<div class="stat-card"><div class="label">Workers Online</div><div class="value stat-blue" id="stat-online">0<span class="unit" id="stat-total">/0</span></div></div>
+<div class="stat-card"><div class="label">Total Power</div><div class="value stat-purple" id="stat-power">0<span class="unit">W</span></div></div>
+<div class="stat-card"><div class="label">Total ETHW Earned</div><div class="value stat-orange" id="stat-etc">0<span class="unit">ETHW</span></div></div>
+</div>
+
+<div class="section">
+<div class="section-header"><h2>Workers</h2><span id="worker-count" style="color:#666;font-size:13px"></span></div>
+<div class="section-body">
+<div class="worker-grid" id="worker-grid">
+<div class="no-workers">Waiting for workers to connect...</div>
+</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+<div class="section">
+<div class="section-header"><h2>AI Assistant</h2><span style="color:#666;font-size:12px">Nemotron Ultra</span></div>
+<div class="section-body" style="padding:0">
+<div class="chat-panel">
+<div class="chat-messages" id="chat-messages">
+<div class="chat-msg ai">Hello! I'm your AI assistant powered by Nemotron Ultra. Ask me anything.</div>
+</div>
+<div class="chat-input-row">
+<input type="text" id="chat-input" placeholder="Ask something..." onkeydown="if(event.key==='Enter')sendChat()">
+<button onclick="sendChat()">Send</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-header"><h2>Login Activity</h2></div>
+<div class="section-body">
+<div class="activity-list" id="activity-list">
+<div style="color:#666;font-size:13px;text-align:center;padding:20px">No activity yet</div>
+</div>
+</div>
+</div>
+</div>
+
+{% if role == 'admin' %}
+<div class="section">
+<div class="tabs">
+<div class="tab active" onclick="switchTab('users')">User Management</div>
+<div class="tab" onclick="switchTab('config')">Settings</div>
+</div>
+<div class="section-body">
+<div class="tab-content active" id="tab-users">
+<div class="add-user-form">
+<input type="text" id="new-user" placeholder="Full Name">
+<input type="email" id="new-email" placeholder="Email">
+<input type="password" id="new-pass" placeholder="Password">
+<select id="new-role"><option value="employee">Employee</option><option value="admin">Admin</option></select>
+<button onclick="addUser()">Add User</button>
+</div>
+<table class="user-table">
+<thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Created</th><th></th></tr></thead>
+<tbody id="user-list"></tbody>
+</table>
+</div>
+<div class="tab-content" id="tab-config">
+<div class="config-row"><label>NVIDIA API Key</label><input type="password" id="cfg-apikey" placeholder="nvapi-..."></div>
+<button class="save-btn" onclick="saveConfig()">Save Settings</button>
+</div>
+</div>
+</div>
+{% endif %}
+</div>
+
+<script>
+const ROLE = '{{ role }}';
+let startTime = Date.now();
+
+function switchTab(name){
+document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+event.target.classList.add('active');
+document.getElementById('tab-'+name).classList.add('active');
+}
+
+async function fetchStats(){
+try{
+const r=await fetch('/api/stats');
+const d=await r.json();
+document.getElementById('stat-hashrate').innerHTML=d.total_hashrate+'<span class="unit">MH/s</span>';
+document.getElementById('stat-online').innerHTML=d.online_workers+'<span class="unit">/'+d.total_workers+'</span>';
+document.getElementById('stat-power').innerHTML=d.total_power+'<span class="unit">W</span>';
+document.getElementById('stat-etc').innerHTML=d.etc_earned+'<span class="unit">ETHW</span>';
+const h=Math.floor((Date.now()-startTime)/3600000);
+document.getElementById('stat-uptime').innerHTML=h+'<span class="unit">h</span>';
+}catch(e){}
+}
+
+async function fetchWorkers(){
+try{
+const r=await fetch('/api/workers');
+const workers=await r.json();
+const grid=document.getElementById('worker-grid');
+if(!workers.length){grid.innerHTML='<div class="no-workers">Waiting for workers to connect...</div>';return}
+grid.innerHTML=workers.map(w=>`
+<div class="worker-card">
+<div class="status-dot ${w.is_online?'online':'offline'}"></div>
+<h3>${w.display_name || w.hostname || w.worker_id}</h3>
+<div class="gpu">${w.gpu_name||'Unknown GPU'} (${w.gpu_count||0}x) &bull; ${w.coin||'ETHW'}</div>
+<div class="stats">
+<div class="stat"><span>Hashrate:</span> ${w.hashrate} MH/s</div>
+<div class="stat"><span>Power:</span> ${w.power_usage}W</div>
+<div class="stat"><span>Temp:</span> ${w.temperature}C</div>
+<div class="stat"><span>Status:</span> ${w.status}</div>
+<div class="stat"><span>IP:</span> ${w.ip_address}</div>
+<div class="stat"><span>Miner:</span> ${w.miner_version}</div>
+</div>
+</div>
+`).join('');
+document.getElementById('worker-count').textContent=workers.length+' total';
+}catch(e){}
+}
+
+async function fetchActivity(){
+try{
+const r=await fetch('/api/active-logins');
+const logs=await r.json();
+const el=document.getElementById('activity-list');
+if(!logs.length)return;
+el.innerHTML=logs.map(l=>`
+<div class="activity-item">
+<span><span class="user">${l.username}</span> (${l.email||'no email'}) signed in from ${l.ip_address}</span>
+<span class="time">${new Date(l.login_time).toLocaleString()}</span>
+</div>
+`).join('');
+}catch(e){}
+}
+
+async function sendChat(){
+const input=document.getElementById('chat-input');
+const msg=input.value.trim();
+if(!msg)return;
+input.value='';
+const msgs=document.getElementById('chat-messages');
+msgs.innerHTML+=`<div class="chat-msg user">${escHtml(msg)}</div>`;
+msgs.innerHTML+=`<div class="chat-msg ai" id="typing">Thinking...</div>`;
+msgs.scrollTop=msgs.scrollHeight;
+try{
+const r=await fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})});
+const d=await r.json();
+document.getElementById('typing').remove();
+msgs.innerHTML+=`<div class="chat-msg ai">${escHtml(d.reply||d.error)}</div>`;
+msgs.scrollTop=msgs.scrollHeight;
+}catch(e){
+document.getElementById('typing').remove();
+msgs.innerHTML+=`<div class="chat-msg ai" style="color:#ff4444">Error: ${e.message}</div>`;
+}
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
+
+async function loadUsers(){
+if(ROLE!=='admin')return;
+try{
+const r=await fetch('/api/users');
+const users=await r.json();
+document.getElementById('user-list').innerHTML=users.map(u=>`
+<tr><td>${u.username}</td><td>${u.email||'-'}</td><td>${u.role}</td><td>${u.created_at||'-'}</td>
+<td>${u.role!=='admin'?'<button class="del-btn" onclick="delUser('+u.id+')">Delete</button>':''}</td></tr>
+`).join('');
+}catch(e){}
+}
+
+async function addUser(){
+const username=document.getElementById('new-user').value.trim();
+const email=document.getElementById('new-email').value.trim();
+const password=document.getElementById('new-pass').value;
+const role=document.getElementById('new-role').value;
+if(!username||!password||!email)return alert('Fill all fields');
+try{
+const r=await fetch('/api/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,email,password,role})});
+const d=await r.json();
+if(d.error)return alert(d.error);
+document.getElementById('new-user').value='';
+document.getElementById('new-email').value='';
+document.getElementById('new-pass').value='';
+loadUsers();
+}catch(e){alert(e.message)}
+}
+
+async function delUser(id){
+if(!confirm('Delete this user?'))return;
+await fetch('/api/users/'+id,{method:'DELETE'});
+loadUsers();
+}
+
+async function loadConfig(){
+if(ROLE!=='admin')return;
+try{
+const r=await fetch('/api/config');
+const d=await r.json();
+if(d.nvidia_api_key)document.getElementById('cfg-apikey').value=d.nvidia_api_key;
+}catch(e){}
+}
+
+async function saveConfig(){
+const apikey=document.getElementById('cfg-apikey').value.trim();
+await fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nvidia_api_key:apikey})});
+alert('Settings saved');
+}
+
+fetchStats();fetchWorkers();fetchActivity();loadUsers();loadConfig();
+setInterval(()=>{fetchStats();fetchWorkers();fetchActivity()},5000);
+</script>
+</body>
+</html>

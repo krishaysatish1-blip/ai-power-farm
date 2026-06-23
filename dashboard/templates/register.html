@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Power Farm - Register</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.login-box{background:#12121a;border:1px solid #1e1e2e;border-radius:16px;padding:40px;width:380px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.logo{text-align:center;margin-bottom:32px}
+.logo h1{font-size:28px;background:linear-gradient(135deg,#00d4ff,#7b2fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700}
+.logo p{color:#666;font-size:13px;margin-top:4px}
+.field{margin-bottom:20px}
+.field label{display:block;font-size:12px;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+.field input{width:100%;padding:12px 16px;background:#0a0a0f;border:1px solid #2a2a3a;border-radius:8px;color:#fff;font-size:14px;outline:none;transition:border .2s}
+.field input:focus{border-color:#7b2fff}
+.btn{width:100%;padding:14px;background:linear-gradient(135deg,#7b2fff,#00d4ff);border:none;border-radius:8px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:opacity .2s}
+.btn:hover{opacity:.9}
+.error{background:#2d1b1b;border:1px solid #ff4444;border-radius:8px;padding:10px;color:#ff6666;font-size:13px;margin-bottom:16px;text-align:center}
+.success{background:#1b2d1b;border:1px solid #44ff44;border-radius:8px;padding:10px;color:#66ff66;font-size:13px;margin-bottom:16px;text-align:center}
+.link{text-align:center;margin-top:20px;font-size:13px;color:#666}
+.link a{color:#7b2fff;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="login-box">
+<div class="logo">
+<h1>AI POWER FARM</h1>
+<p>Create Account</p>
+</div>
+{% if error %}
+<div class="error">{{ error }}</div>
+{% endif %}
+{% if success %}
+<div class="success">{{ success }}</div>
+{% endif %}
+<form method="POST">
+<div class="field">
+<label>Full Name</label>
+<input type="text" name="username" required placeholder="John Doe">
+</div>
+<div class="field">
+<label>Email</label>
+<input type="email" name="email" required placeholder="john@company.com">
+</div>
+<div class="field">
+<label>Password</label>
+<input type="password" name="password" required minlength="4">
+</div>
+<button type="submit" class="btn">Create Account</button>
+</form>
+<div class="link">Already have an account? <a href="/login">Sign In</a></div>
+</div>
+</body>
+</html>

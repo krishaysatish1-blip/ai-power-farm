@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Power Farm - Login</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.login-box{background:#12121a;border:1px solid #1e1e2e;border-radius:16px;padding:40px;width:380px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.logo{text-align:center;margin-bottom:32px}
+.logo h1{font-size:28px;background:linear-gradient(135deg,#00d4ff,#7b2fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700}
+.logo p{color:#666;font-size:13px;margin-top:4px}
+.field{margin-bottom:20px}
+.field label{display:block;font-size:12px;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+.field input{width:100%;padding:12px 16px;background:#0a0a0f;border:1px solid #2a2a3a;border-radius:8px;color:#fff;font-size:14px;outline:none;transition:border .2s}
+.field input:focus{border-color:#7b2fff}
+.btn{width:100%;padding:14px;background:linear-gradient(135deg,#7b2fff,#00d4ff);border:none;border-radius:8px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:opacity .2s}
+.btn:hover{opacity:.9}
+.error{background:#2d1b1b;border:1px solid #ff4444;border-radius:8px;padding:10px;color:#ff6666;font-size:13px;margin-bottom:16px;text-align:center}
+</style>
+</head>
+<body>
+<div class="login-box">
+<div class="logo">
+<h1>AI POWER FARM</h1>
+<p>Mining Dashboard</p>
+</div>
+{% if error %}
+<div class="error">{{ error }}</div>
+{% endif %}
+<form method="POST">
+<div class="field">
+<label>Username</label>
+<input type="text" name="username" required autocomplete="username">
+</div>
+<div class="field">
+<label>Password</label>
+<input type="password" name="password" required autocomplete="current-password">
+</div>
+<button type="submit" class="btn">Sign In</button>
+</form>
+<div style="text-align:center;margin-top:20px;font-size:13px;color:#666">
+Don't have an account? <a href="/register" style="color:#7b2fff;text-decoration:none">Create one</a>
+</div>
+</div>
+</body>
+</html>
