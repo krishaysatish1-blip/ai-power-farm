@@ -4,7 +4,6 @@ a Free Jarvis-style dashboard self funded by a web3-powered compute network
 
 ## Quick Start
 
-### Main Rig (Admin)
 1. Download `AI-Power-Farm.bat`
 2. Right-click → Run as Administrator
 3. Wait for installation to complete
@@ -12,10 +11,12 @@ a Free Jarvis-style dashboard self funded by a web3-powered compute network
 5. Login: create a new account 
 
 ### customers
-1. Download `AI-Team.bat`
-2. Right-click → Run as Administrator
-3. Everything installs automatically (dashboard + AI chat)
-4. Access dashboard via browser: `http://YOUR_SERVER_IP:5000`
+1. Download zip file
+2. extract the files
+3. run 
+4. Right-click → Run as Administrator
+5. Everything installs automatically (dashboard + AI chat)
+6. Access dashboard via browser: `http://YOUR_SERVER_IP:5000`
 
 ## Features
 
