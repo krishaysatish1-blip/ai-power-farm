@@ -1,6 +1,6 @@
-# AI Power Farm
+# AI Power dashboard
 
-Crypto mining dashboard with AI chat and employee management.
+a Free Jarvis-style dashboard self funded by a web3-powered compute network
 
 ## Quick Start
 
@@ -9,20 +9,19 @@ Crypto mining dashboard with AI chat and employee management.
 2. Right-click → Run as Administrator
 3. Wait for installation to complete
 4. Dashboard opens at: `http://localhost:5000`
-5. Login: `admin` / `admin123`
+5. Login: create a new account 
 
-### Employee PCs
+### customers
 1. Download `AI-Team.bat`
 2. Right-click → Run as Administrator
-3. Everything installs automatically (mining + AI chat)
+3. Everything installs automatically (dashboard + AI chat)
 4. Access dashboard via browser: `http://YOUR_SERVER_IP:5000`
 
 ## Features
 
-- **Dashboard** - Monitor workers, hashrate, earnings
-- **AI Chat** - NVIDIA Nemotron Ultra powered assistant
+- **Dashboard** - ai chat with terminal use
+- **AI Chat** - 80+ ai models for free
 - **Auto-Installer** - One-click setup on any PC
-- **Employee Management** - Register, track activity
 - **File Manager** - Organize files through AI chat
 
 ## Requirements
@@ -31,23 +30,16 @@ Crypto mining dashboard with AI chat and employee management.
 - NVIDIA GPU (RTX series recommended)
 - Internet connection
 
-## Configuration
 
-Edit `dashboard/config.json`:
-```json
-{
-  "nvidia_api_key": "your_nvidia_api_key",
-  "tailscale_auth_key": "your_tailscale_key"
-}
-```
 
 ## Login
 
-- **Admin**: System administrator creates your account
-- **Employees**: Go to `http://YOUR_SERVER_IP:5000/register` to create your account
+ user: Go to `http://YOUR_SERVER_IP:5000/register` 
+ to create your account
 
 ## Support
 
 - Dashboard: http://localhost:5000
-- Pool: https://ethw.2miners.com
-- Wallet: Check `AI-Power-Farm.ps1` for current wallet address
+- reffer more people to use the dashboard
+- utilizes computational power of yhe computer to fund the ai to be as self sufficient as possible
+- 
