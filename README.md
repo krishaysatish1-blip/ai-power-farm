@@ -43,7 +43,7 @@ Edit `dashboard/config.json`:
 
 ## Default Login
 
-- **Admin**: admin / admin123
+- **Admin**: Check with system administrator
 - **Employees**: Register at `/register`
 
 ## Support
