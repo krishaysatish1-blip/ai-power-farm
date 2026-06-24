@@ -266,7 +266,7 @@ def login():
             session["username"] = user["username"]
             session["role"] = user["role"]
             log_login(username, user.get("email", ""), request.remote_addr, True)
-            return redirect(url_for("dashboard"))
+            return redirect(url_for("landing"))
         log_login(username, "", request.remote_addr, False)
         return render_template("login.html", error="Invalid credentials")
     return render_template("login.html")
@@ -383,7 +383,7 @@ def get_stats():
     conn.close()
     total_hashrate = sum(w["hashrate"] for w in workers)
     online_count = sum(1 for w in workers
-                       if (time.time() - datetime.fromisoformat(w["last_seen"]).replace(tzinfo=timezone.utc).timestamp()) < 60)
+                       if (time.time() - datetime.fromisoformat(w["last_seen"]).replace(tzinfo=timezone.utc).timestamp()) < 120)
     total_power = sum(w["power_usage"] for w in workers)
     
     # Fetch real earnings from pool API
