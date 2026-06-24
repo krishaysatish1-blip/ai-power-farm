@@ -21,6 +21,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a0f;color:#e0e0e
 .success{background:#1b2d1b;border:1px solid #44ff44;border-radius:8px;padding:10px;color:#66ff66;font-size:13px;margin-bottom:16px;text-align:center}
 .link{text-align:center;margin-top:20px;font-size:13px;color:#666}
 .link a{color:#7b2fff;text-decoration:none}
+.ref-note{font-size:11px;color:#555;margin-top:4px}
 </style>
 </head>
 <body>
@@ -48,9 +49,19 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a0f;color:#e0e0e
 <label>Password</label>
 <input type="password" name="password" required minlength="4">
 </div>
+<div class="field">
+<label>Referral Code (Optional)</label>
+<input type="text" name="referral_code" placeholder="Enter referral code" id="ref-input">
+<div class="ref-note">Have a code from a friend? Enter it above</div>
+</div>
 <button type="submit" class="btn">Create Account</button>
 </form>
 <div class="link">Already have an account? <a href="/login">Sign In</a></div>
 </div>
+<script>
+const params = new URLSearchParams(window.location.search);
+const ref = params.get('ref');
+if (ref) document.getElementById('ref-input').value = ref;
+</script>
 </body>
 </html>
