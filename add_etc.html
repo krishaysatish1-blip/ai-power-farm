@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Add ETC Network to MetaMask</title>
+<style>
+body{background:#0a0a0a;color:#fff;font-family:Inter,sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}
+.card{background:rgba(20,20,20,0.9);border:1px solid rgba(0,255,136,0.2);border-radius:16px;padding:40px;text-align:center;max-width:400px}
+h1{font-size:24px;margin-bottom:8px;color:#00ff88}
+p{color:#888;margin-bottom:24px}
+.btn{padding:14px 32px;background:linear-gradient(135deg,#00ff88,#00e5ff);border:none;border-radius:12px;color:#000;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn:hover{transform:scale(1.05);box-shadow:0 0 30px rgba(0,255,136,0.4)}
+#status{margin-top:16px;font-size:14px;color:#888}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>⚡ Add ETC Network</h1>
+<p>Click below to add Ethereum Classic to MetaMask</p>
+<button class="btn" onclick="addETC()">Add Ethereum Classic</button>
+<div id="status"></div>
+</div>
+<script>
+async function addETC(){
+const s=document.getElementById('status');
+if(typeof window.ethereum==='undefined'){s.innerHTML='<span style="color:#ff5f57">MetaMask not found. Open this page in the browser with MetaMask.</span>';return;}
+try{
+await window.ethereum.request({method:'wallet_addEthereumChain',params:[{chainId:'0x3d',chainName:'Ethereum Classic',nativeCurrency:{name:'Ethereum Classic',symbol:'ETC',decimals:18},rpcUrls:['https://geth.etcclassic.com'],blockExplorerUrls:['https://etc.blockscout.com']}]});
+s.innerHTML='<span style="color:#00ff88">✓ ETC network added! Mining will deposit here.</span>';
+}catch(e){s.innerHTML='<span style="color:#ff5f57">'+e.message+'</span>';}
+}
+</script>
+</body>
+</html>

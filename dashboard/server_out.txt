@@ -1,0 +1,4 @@
+AI Power Farm Dashboard starting on http://0.0.0.0:5000
+Default admin login: admin / admin123
+ * Serving Flask app 'server'
+ * Debug mode: off

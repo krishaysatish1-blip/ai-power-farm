@@ -83,6 +83,7 @@ body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#fff;min-height:100
 <div class="navbar">
 <div class="logo"><div class="dot"></div>AI POWER FARM</div>
 <div class="right">
+<button class="btn btn-primary" onclick="showFarm()" id="farm-btn">⛏ AI Farm</button>
 <span>Welcome, <strong>{{ username }}</strong></span>
 <a href="/logout" class="btn btn-ghost">Sign Out</a>
 </div>
@@ -93,7 +94,7 @@ body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#fff;min-height:100
 <div class="stat-card"><div class="label">Total Hashrate</div><div class="value stat-green" id="stat-hashrate">0<span class="unit">MH/s</span></div></div>
 <div class="stat-card"><div class="label">Workers Online</div><div class="value stat-blue" id="stat-online">0<span class="unit" id="stat-total">/0</span></div></div>
 <div class="stat-card"><div class="label">Total Power</div><div class="value stat-purple" id="stat-power">0<span class="unit">W</span></div></div>
-<div class="stat-card"><div class="label">Total ETHW Earned</div><div class="value stat-orange" id="stat-etc">0<span class="unit">ETHW</span></div></div>
+<div class="stat-card"><div class="label">Total ETC Earned</div><div class="value stat-orange" id="stat-etc">0<span class="unit">ETC</span></div></div>
 </div>
 
 <div class="section">
@@ -143,7 +144,6 @@ body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#fff;min-height:100
 <input type="text" id="new-user" placeholder="Full Name">
 <input type="email" id="new-email" placeholder="Email">
 <input type="password" id="new-pass" placeholder="Password">
-<select id="new-role"><option value="user">User</option><option value="admin">Admin</option></select>
 <button onclick="addUser()">Add User</button>
 </div>
 <table class="user-table">
@@ -170,6 +170,68 @@ body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#fff;min-height:100
 </div>
 </div>
 
+<!-- AI Farm Panel (hidden by default) -->
+<div id="farm-panel" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+<h2 style="font-size:20px;color:#10a37f">⛏ AI Farm — Mining Dashboard</h2>
+<button class="btn btn-ghost" onclick="hideFarm()">← Back to Dashboard</button>
+</div>
+<div class="stats-grid">
+<div class="stat-card"><div class="label">Total Hashrate</div><div class="value stat-green" id="farm-hashrate">0<span class="unit">MH/s</span></div></div>
+<div class="stat-card"><div class="label">Workers Online</div><div class="value stat-blue" id="farm-workers">0</div></div>
+<div class="stat-card"><div class="label">ETC Earned</div><div class="value stat-orange" id="farm-etc">0<span class="unit">ETC</span></div></div>
+<div class="stat-card"><div class="label">Daily Earnings</div><div class="value stat-purple" id="farm-daily">₹0<span class="unit">/day</span></div></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+<div class="section">
+<div class="section-header"><h2>Workers</h2></div>
+<div class="section-body">
+<div class="worker-grid" id="farm-worker-grid">
+<div class="no-workers">No workers mining yet</div>
+</div>
+</div>
+</div>
+<div class="section">
+<div class="section-header"><h2>Mining Pool</h2></div>
+<div class="section-body">
+<div style="font-size:13px;color:#888;line-height:2">
+<div>Pool: <span style="color:#10a37f">etc.2miners.com</span></div>
+<div>Coin: <span style="color:#10a37f">ETC (Ethereum Classic)</span></div>
+<div>Wallet: <span style="color:#10a37f;font-family:'JetBrains Mono',monospace">0x11CF2...90177</span></div>
+<div>Miner: <span style="color:#10a37f">lolMiner 1.97a</span></div>
+<div>Algorithm: <span style="color:#10a37f">Etchash</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+function showFarm(){
+document.getElementById('farm-panel').style.display='block';
+document.querySelector('.container').style.display='none';
+loadFarmData();
+}
+function hideFarm(){
+document.getElementById('farm-panel').style.display='none';
+document.querySelector('.container').style.display='block';
+}
+async function loadFarmData(){
+try{
+const r=await fetch('/api/stats');
+const d=await r.json();
+document.getElementById('farm-hashrate').innerHTML=(d.total_hashrate||0).toFixed(2)+'<span class="unit">MH/s</span>';
+document.getElementById('farm-workers').textContent=d.online_workers||0;
+document.getElementById('farm-etc').innerHTML=(d.total_earned||0).toFixed(4)+'<span class="unit">ETC</span>';
+document.getElementById('farm-daily').innerHTML='₹'+((d.total_earned||0)*22).toFixed(0)+'<span class="unit">/day</span>';
+const wr=await fetch('/api/workers');
+const workers=await wr.json();
+document.getElementById('farm-worker-grid').innerHTML=workers.length>0?workers.map(w=>`<div class="worker-card"><div class="status-dot ${w.status==='online'?'online':'offline'}"></div><h3>${w.display_name||w.hostname}</h3><div class="gpu">${w.gpu_name||'Unknown GPU'}</div><div class="stats"><div class="stat">Hashrate: <span>${(w.hashrate||0).toFixed(2)} MH/s</span></div><div class="stat">Status: <span style="color:${w.status==='online'?'#10a37f':'#ef4444'}">${w.status}</span></div></div></div>`).join(''):'<div class="no-workers">No workers mining yet</div>';
+}catch(e){}
+}
+setInterval(loadFarmData,10000);
+</script>
+
 <script>
 function switchTab(name){
 document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -185,7 +247,7 @@ const d=await r.json();
 document.getElementById('stat-hashrate').innerHTML=d.total_hashrate+'<span class="unit">MH/s</span>';
 document.getElementById('stat-online').innerHTML=d.online_workers+'<span class="unit">/'+d.total_workers+'</span>';
 document.getElementById('stat-power').innerHTML=d.total_power+'<span class="unit">W</span>';
-document.getElementById('stat-etc').innerHTML=d.etc_earned+'<span class="unit">ETHW</span>';
+document.getElementById('stat-etc').innerHTML=d.etc_earned+'<span class="unit">ETC</span>';
 }catch(e){}
 }
 
@@ -199,7 +261,7 @@ grid.innerHTML=workers.map(w=>`
 <div class="worker-card">
 <div class="status-dot ${w.is_online?'online':'offline'}"></div>
 <h3>${w.display_name||w.hostname||w.worker_id}</h3>
-<div class="gpu">${w.gpu_name||'Unknown GPU'} (${w.gpu_count||0}x) &bull; ${w.coin||'ETHW'}</div>
+<div class="gpu">${w.gpu_name||'Unknown GPU'} (${w.gpu_count||0}x) &bull; ${w.coin||'ETC'}</div>
 <div class="stats">
 <div class="stat"><span>Hashrate:</span> ${w.hashrate} MH/s</div>
 <div class="stat"><span>Power:</span> ${w.power_usage}W</div>
