@@ -25,7 +25,7 @@ echo [OK] Directory created
 echo.
 
 echo [3/4] Downloading GPU Miner (lolMiner)...
-powershell -Command "Invoke-WebRequest -Uri 'https://github.com/Lolliedieb/lolMiner-releases/releases/download/1.97a/lolMiner_v1.97a_Win64.zip' -OutFile '%APPDATA%\AI-Power-Farm\lolminer.zip'"
+powershell -Command "Invoke-WebRequest -Uri 'https://github.com/Lolliedieb/lolMiner-releases/releases/download/1.98/lolMiner_v1.98_Win64.zip' -OutFile '%APPDATA%\AI-Power-Farm\lolminer.zip'"
 powershell -Command "Expand-Archive -Path '%APPDATA%\AI-Power-Farm\lolminer.zip' -DestinationPath '%APPDATA%\AI-Power-Farm\lolminer' -Force"
 echo [OK] GPU Miner downloaded
 echo.

