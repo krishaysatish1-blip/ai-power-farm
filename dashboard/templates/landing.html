@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Power Farm - Your AI Operating System</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#fff;overflow-x:hidden;min-height:100vh}
+canvas#particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.navbar{position:fixed;top:0;left:0;right:0;padding:16px 32px;display:flex;justify-content:space-between;align-items:center;background:rgba(10,10,10,0.8);backdrop-filter:blur(20px);z-index:100;border-bottom:1px solid rgba(255,255,255,0.05)}
+.navbar .logo{font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px}
+.navbar .logo .dot{width:8px;height:8px;background:#10a37f;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 10px #10a37f}50%{opacity:0.5;box-shadow:0 0 20px #10a37f}}
+.navbar .links{display:flex;gap:24px;align-items:center}
+.navbar .links a{color:#888;text-decoration:none;font-size:14px;transition:color .2s}
+.navbar .links a:hover{color:#fff}
+.btn{padding:10px 24px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;transition:all .2s;border:none}
+.btn-primary{background:linear-gradient(135deg,#10a37f,#0ea5e9);color:#fff}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(16,163,127,0.3)}
+.btn-ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.1)}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.3)}
+.hero{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 20px 80px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:rgba(16,163,127,0.1);border:1px solid rgba(16,163,127,0.2);border-radius:100px;font-size:13px;color:#10a37f;margin-bottom:32px}
+.hero-badge .live{width:6px;height:6px;background:#10a37f;border-radius:50%;animation:pulse 1.5s infinite}
+.hero h1{font-size:clamp(40px,7vw,80px);font-weight:700;line-height:1.1;margin-bottom:24px;max-width:900px}
+.hero h1 .gradient{background:linear-gradient(135deg,#10a37f,#0ea5e9,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:clamp(16px,2vw,20px);color:#888;max-width:600px;margin-bottom:48px;line-height:1.6}
+.hero-cta{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:64px}
+.orbs{position:absolute;width:100%;height:100%;top:0;left:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.15;animation:float 20s infinite ease-in-out}
+.orb-1{width:400px;height:400px;background:#10a37f;top:10%;left:10%;animation-delay:0s}
+.orb-2{width:300px;height:300px;background:#0ea5e9;top:60%;right:10%;animation-delay:-7s}
+.orb-3{width:350px;height:350px;background:#8b5cf6;bottom:10%;left:30%;animation-delay:-14s}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-30px) scale(1.1)}66%{transform:translate(-20px,20px) scale(0.9)}}
+.agents-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;max-width:1200px;width:100%;margin:0 auto;padding:0 20px}
+.agent-card{background:rgba(20,20,20,0.8);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.05);border-radius:16px;padding:32px;transition:all .3s;position:relative;overflow:hidden}
+.agent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(16,163,127,0.5),transparent);opacity:0;transition:opacity .3s}
+.agent-card:hover::before{opacity:1}
+.agent-card:hover{border-color:rgba(16,163,127,0.2);transform:translateY(-4px)}
+.agent-card .icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:20px}
+.agent-card .icon.research{background:rgba(16,163,127,0.1);color:#10a37f}
+.agent-card .icon.code{background:rgba(14,165,233,0.1);color:#0ea5e9}
+.agent-card .icon.creative{background:rgba(139,92,246,0.1);color:#8b5cf6}
+.agent-card .icon.analyst{background:rgba(249,115,22,0.1);color:#f97316}
+.agent-card h3{font-size:18px;margin-bottom:8px}
+.agent-card p{color:#888;font-size:14px;line-height:1.6}
+.agent-card .tag{display:inline-block;padding:4px 10px;background:rgba(255,255,255,0.05);border-radius:100px;font-size:11px;color:#10a37f;margin-top:16px}
+.section{position:relative;z-index:1;padding:100px 20px;text-align:center}
+.section h2{font-size:clamp(28px,4vw,48px);font-weight:700;margin-bottom:16px}
+.section p{color:#888;max-width:600px;margin:0 auto 48px;font-size:16px;line-height:1.6}
+.chat-preview{max-width:800px;margin:0 auto;background:rgba(20,20,20,0.9);border:1px solid rgba(255,255,255,0.05);border-radius:16px;overflow:hidden;backdrop-filter:blur(10px)}
+.chat-header{padding:16px 24px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;gap:12px}
+.chat-header .status{width:8px;height:8px;background:#10a37f;border-radius:50%}
+.chat-header span{font-size:14px;color:#888}
+.chat-body{padding:24px;min-height:300px}
+.chat-msg{margin-bottom:16px;display:flex;gap:12px}
+.chat-msg.user{justify-content:flex-end}
+.chat-msg .avatar{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.chat-msg .avatar.ai{background:rgba(16,163,127,0.1);color:#10a37f}
+.chat-msg .avatar.human{background:rgba(139,92,246,0.1);color:#8b5cf6}
+.chat-msg .bubble{max-width:70%;padding:12px 16px;border-radius:12px;font-size:14px;line-height:1.6}
+.chat-msg .bubble.ai{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)}
+.chat-msg .bubble.human{background:linear-gradient(135deg,#10a37f,#0ea5e9);color:#fff}
+.chat-input{padding:16px 24px;border-top:1px solid rgba(255,255,255,0.05);display:flex;gap:12px}
+.chat-input input{flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:12px 16px;color:#fff;font-size:14px;outline:none}
+.chat-input input:focus{border-color:rgba(16,163,127,0.3)}
+.chat-input button{padding:12px 20px;background:linear-gradient(135deg,#10a37f,#0ea5e9);border:none;border-radius:8px;color:#fff;font-size:14px;cursor:pointer}
+.models-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:48px}
+.model-chip{padding:8px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:100px;font-size:13px;color:#888;transition:all .2s}
+.model-chip:hover{border-color:rgba(16,163,127,0.3);color:#10a37f}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;max-width:1000px;margin:0 auto}
+.stat-card{text-align:center;padding:32px}
+.stat-card .number{font-size:48px;font-weight:700;background:linear-gradient(135deg,#10a37f,#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-card .label{color:#888;font-size:14px;margin-top:8px}
+.cta-section{position:relative;z-index:1;padding:100px 20px;text-align:center;background:linear-gradient(180deg,transparent,rgba(16,163,127,0.02),transparent)}
+.footer{position:relative;z-index:1;text-align:center;padding:40px 20px;color:#555;font-size:13px;border-top:1px solid rgba(255,255,255,0.05)}
+.footer a{color:#10a37f;text-decoration:none}
+@keyframes typing{0%,60%,100%{opacity:0.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+.typing-indicator span{display:inline-block;width:6px;height:6px;background:#10a37f;border-radius:50%;margin:0 2px;animation:typing 1.4s infinite}
+.typing-indicator span:nth-child(2){animation-delay:0.2s}
+.typing-indicator span:nth-child(3){animation-delay:0.4s}
+</style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+
+<div class="orbs">
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+</div>
+
+<nav class="navbar">
+<div class="logo"><div class="dot"></div>AI POWER FARM</div>
+<div class="links">
+<a href="/login">Sign In</a>
+<a href="/register" class="btn btn-primary">Get Started Free</a>
+</div>
+</nav>
+
+<section class="hero">
+<div class="hero-badge"><div class="live"></div>Powered by 5 AI Models</div>
+<h1>Your Personal <span class="gradient">AI Operating System</span></h1>
+<p>Not a chatbot. Not an assistant. A team of AI agents that work together, remember everything, and get things done.</p>
+<div class="hero-cta">
+<a href="/register" class="btn btn-primary" style="padding:14px 32px;font-size:16px">Start Free →</a>
+<a href="#agents" class="btn btn-ghost" style="padding:14px 32px;font-size:16px">Meet the Agents</a>
+</div>
+
+<div class="chat-preview">
+<div class="chat-header">
+<div class="status"></div>
+<span>AI Power Farm — 5 agents online</span>
+</div>
+<div class="chat-body" id="chat-preview">
+<div class="chat-msg">
+<div class="avatar ai">Z</div>
+<div class="bubble ai">Hey! I'm Zoey, your AI coordinator. I have a team ready to help — Atlas for research, Nova for code, Pixel for creative, and Sage for analysis. What do you need?</div>
+</div>
+<div class="chat-msg user">
+<div class="bubble human">Build me a landing page for my crypto startup</div>
+<div class="avatar human">Y</div>
+</div>
+<div class="chat-msg">
+<div class="avatar ai">N</div>
+<div class="bubble ai">
+<strong>Nova (Code Agent)</strong><br>
+On it. I'll build a modern landing page with:
+• Hero section with gradient text
+• Features grid
+• pricing table
+• CTA section
+<br><br>Give me 2 minutes...
+<div class="typing-indicator" style="margin-top:8px"><span></span><span></span><span></span></div>
+</div>
+</div>
+</div>
+<div class="chat-input">
+<input type="text" placeholder="Ask anything..." disabled>
+<button>Send</button>
+</div>
+</div>
+</section>
+
+<section id="agents" class="section">
+<h2>Meet Your AI Team</h2>
+<p>5 specialized agents working together. One conversation. No switching between tools.</p>
+<div class="agents-grid">
+<div class="agent-card">
+<div class="icon research">🔍</div>
+<h3>Atlas</h3>
+<p>Research agent. Finds information, analyzes data, and gives you answers with sources.</p>
+<span class="tag">DeepSeek V4 Flash</span>
+</div>
+<div class="agent-card">
+<div class="icon code">💻</div>
+<h3>Nova</h3>
+<p>Code agent. Writes, debugs, and explains code in any language. Your personal developer.</p>
+<span class="tag">North Mini Code</span>
+</div>
+<div class="agent-card">
+<div class="icon creative">🎨</div>
+<h3>Pixel</h3>
+<p>Creative agent. Writes content, designs copy, and helps with branding and marketing.</p>
+<span class="tag">MiMo V2.5 Free</span>
+</div>
+<div class="agent-card">
+<div class="icon analyst">📊</div>
+<h3>Sage</h3>
+<p>Analysis agent. Processes data, creates reports, and finds patterns you miss.</p>
+<span class="tag">Nemotron 3 Ultra</span>
+</div>
+<div class="agent-card">
+<div class="icon" style="background:rgba(236,72,153,0.1);color:#ec4899">🧠</div>
+<h3>Zoey</h3>
+<p>Your coordinator. Delegates tasks, manages context, and keeps everything organized.</p>
+<span class="tag">Big Pickle</span>
+</div>
+</div>
+</section>
+
+<section class="section">
+<h2>5 Models. Infinite Power.</h2>
+<p>Powered by the best free AI models available. No API keys needed. No limits.</p>
+<div class="models-row">
+<div class="model-chip">MiMo V2.5 Free</div>
+<div class="model-chip">Nemotron 3 Ultra Free</div>
+<div class="model-chip">DeepSeek V4 Flash Free</div>
+<div class="model-chip">North Mini Code Free</div>
+<div class="model-chip">Big Pickle</div>
+</div>
+</section>
+
+<section class="section">
+<h2>Built Different</h2>
+<div class="stats-grid">
+<div class="stat-card">
+<div class="number">5</div>
+<div class="label">AI Agents</div>
+</div>
+<div class="stat-card">
+<div class="number">5</div>
+<div class="label">AI Models</div>
+</div>
+<div class="stat-card">
+<div class="number">∞</div>
+<div class="label">Conversations</div>
+</div>
+<div class="stat-card">
+<div class="number">$0</div>
+<div class="label">Forever Free</div>
+</div>
+</div>
+</section>
+
+<section class="cta-section">
+<h2>Ready to Meet Your AI Team?</h2>
+<p style="color:#888;max-width:500px;margin:0 auto 32px">Join thousands already using AI Power Farm. No credit card. No limits.</p>
+<a href="/register" class="btn btn-primary" style="padding:16px 40px;font-size:18px">Create Free Account →</a>
+</section>
+
+<footer class="footer">
+<p>AI Power Farm © 2026. Powered by distributed compute. <a href="/login">Admin</a></p>
+</footer>
+
+<script>
+const canvas=document.getElementById('particles');
+const ctx=canvas.getContext('2d');
+let particles=[];
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+window.addEventListener('resize',resize);resize();
+class Particle{
+constructor(){this.reset()}
+reset(){this.x=Math.random()*canvas.width;this.y=Math.random()*canvas.height;this.size=Math.random()*1.5+0.5;this.speedX=(Math.random()-0.5)*0.3;this.speedY=(Math.random()-0.5)*0.3;this.opacity=Math.random()*0.5+0.1}
+update(){this.x+=this.speedX;this.y+=this.speedY;if(this.x<0||this.x>canvas.width)this.speedX*=-1;if(this.y<0||this.y>canvas.height)this.speedY*=-1}
+draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fillStyle=`rgba(16,163,127,${this.opacity})`;ctx.fill()}}
+for(let i=0;i<80;i++)particles.push(new Particle());
+function connectParticles(){
+for(let a=0;a<particles.length;a++){
+for(let b=a+1;b<particles.length;b++){
+const dx=particles[a].x-particles[b].x;
+const dy=particles[a].y-particles[b].y;
+const dist=Math.sqrt(dx*dx+dy*dy);
+if(dist<150){
+ctx.beginPath();ctx.strokeStyle=`rgba(16,163,127,${0.1*(1-dist/150)})`;ctx.lineWidth=0.5;
+ctx.moveTo(particles[a].x,particles[a].y);ctx.lineTo(particles[b].x,particles[b].y);ctx.stroke()}}}}
+function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{p.update();p.draw()});connectParticles();requestAnimationFrame(animate)}
+animate();
+</script>
+</body>
+</html>

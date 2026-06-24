@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Power Farm - AI Operating System</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#fff;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.sidebar{width:260px;background:#0d0d0d;border-right:1px solid rgba(255,255,255,0.05);display:flex;flex-direction:column;height:100vh;position:relative;z-index:2}
+.sidebar-header{padding:20px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.sidebar-header .logo{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:600}
+.sidebar-header .logo .dot{width:8px;height:8px;background:#10a37f;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 10px #10a37f}50%{opacity:0.5;box-shadow:0 0 20px #10a37f}}
+.sidebar-nav{flex:1;padding:12px;overflow-y:auto}
+.nav-section{margin-bottom:24px}
+.nav-section .title{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:1px;padding:8px 12px;margin-bottom:4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:all .15s;color:#888;font-size:14px}
+.nav-item:hover{background:rgba(255,255,255,0.03);color:#fff}
+.nav-item.active{background:rgba(16,163,127,0.1);color:#10a37f}
+.nav-item .icon{font-size:16px;width:20px;text-align:center}
+.sidebar-footer{padding:16px;border-top:1px solid rgba(255,255,255,0.05)}
+.user-info{display:flex;align-items:center;gap:10px}
+.user-avatar{width:32px;height:32px;background:linear-gradient(135deg,#10a37f,#0ea5e9);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600}
+.user-name{font-size:13px;color:#ccc}
+.user-role{font-size:11px;color:#555}
+.main{flex:1;display:flex;flex-direction:column;height:100vh;position:relative}
+.main-header{padding:16px 24px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;background:rgba(13,13,13,0.8);backdrop-filter:blur(20px);position:relative;z-index:2}
+.main-header h2{font-size:16px;font-weight:500}
+.header-actions{display:flex;gap:8px}
+.header-actions .btn-icon{width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.05);background:transparent;color:#888;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.header-actions .btn-icon:hover{border-color:rgba(255,255,255,0.1);color:#fff}
+.chat-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.messages{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:16px}
+.message{display:flex;gap:12px;max-width:80%}
+.message.user{align-self:flex-end;flex-direction:row-reverse}
+.message .avatar{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.message .avatar.zoey{background:rgba(16,163,127,0.1);color:#10a37f}
+.message .avatar.atlas{background:rgba(14,165,233,0.1);color:#0ea5e9}
+.message .avatar.nova{background:rgba(139,92,246,0.1);color:#8b5cf6}
+.message .avatar.pixel{background:rgba(249,115,22,0.1);color:#f97316}
+.message .avatar.sage{background:rgba(236,72,153,0.1);color:#ec4899}
+.message .avatar.human{background:rgba(255,255,255,0.05);color:#888}
+.message .bubble{padding:12px 16px;border-radius:12px;font-size:14px;line-height:1.6}
+.message .bubble.ai{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)}
+.message .bubble.human{background:linear-gradient(135deg,#10a37f,#0ea5e9);color:#fff}
+.message .bubble .agent-name{font-size:11px;color:#10a37f;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px}
+.typing-indicator{display:flex;gap:4px;padding:8px 0}
+.typing-indicator span{width:6px;height:6px;background:#10a37f;border-radius:50%;animation:typing 1.4s infinite}
+.typing-indicator span:nth-child(2){animation-delay:0.2s}
+.typing-indicator span:nth-child(3){animation-delay:0.4s}
+@keyframes typing{0%,60%,100%{opacity:0.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+.input-area{padding:16px 24px;border-top:1px solid rgba(255,255,255,0.05);background:rgba(13,13,13,0.8);backdrop-filter:blur(20px)}
+.input-row{display:flex;gap:12px;align-items:center}
+.input-row input{flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:14px 18px;color:#fff;font-size:14px;outline:none;transition:border-color .2s}
+.input-row input:focus{border-color:rgba(16,163,127,0.3)}
+.input-row input::placeholder{color:#555}
+.send-btn{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#10a37f,#0ea5e9);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.send-btn:hover{transform:scale(1.05)}
+.send-btn:active{transform:scale(0.95)}
+.voice-btn{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);color:#888;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.voice-btn:hover{border-color:rgba(255,255,255,0.1);color:#fff}
+.voice-btn.recording{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:#ef4444;animation:recording-pulse 1.5s infinite}
+@keyframes recording-pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.3)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+.agents-bar{display:flex;gap:8px;padding:0 24px 12px;overflow-x:auto}
+.agent-chip{padding:6px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:100px;font-size:12px;color:#888;cursor:pointer;white-space:nowrap;transition:all .15s}
+.agent-chip:hover{border-color:rgba(16,163,127,0.3);color:#10a37f}
+.agent-chip.active{background:rgba(16,163,127,0.1);border-color:rgba(16,163,127,0.3);color:#10a37f}
+.referral-panel,.files-panel,.terminal-panel,.browser-panel,.security-panel,.system-panel{display:none;padding:24px;overflow-y:auto;flex:1}
+.referral-panel.active,.files-panel.active,.terminal-panel.active,.browser-panel.active,.security-panel.active,.system-panel.active{display:block}
+.ref-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:24px;margin-bottom:16px}
+.ref-card h3{font-size:14px;color:#888;margin-bottom:12px}
+.ref-card .code{font-size:24px;font-weight:700;font-family:'JetBrains Mono',monospace;color:#10a37f;margin-bottom:16px}
+.ref-card .link{background:rgba(0,0,0,0.3);padding:12px;border-radius:8px;font-size:12px;color:#0ea5e9;word-break:break-all;font-family:'JetBrains Mono',monospace}
+.file-manager{height:100%}
+.file-toolbar{display:flex;gap:8px;margin-bottom:16px}
+.file-toolbar input{flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px 14px;color:#fff;font-size:13px}
+.file-toolbar button{padding:10px 16px;background:rgba(16,163,127,0.1);border:1px solid rgba(16,163,127,0.2);border-radius:8px;color:#10a37f;font-size:13px;cursor:pointer}
+.file-item{display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background .15s}
+.file-item:hover{background:rgba(255,255,255,0.02)}
+</style>
+</head>
+<body>
+<div class="sidebar">
+<div class="sidebar-header">
+<div class="logo"><div class="dot"></div>AI POWER FARM</div>
+</div>
+<div class="sidebar-nav">
+<div class="nav-section">
+<div class="title">Tools</div>
+<div class="nav-item active" onclick="showPanel('chat')"><span class="icon">💬</span>AI Chat</div>
+<div class="nav-item" onclick="showPanel('terminal')"><span class="icon">💻</span>Terminal</div>
+<div class="nav-item" onclick="showPanel('browser')"><span class="icon">🌐</span>Browser</div>
+<div class="nav-item" onclick="showPanel('files')"><span class="icon">📁</span>Files</div>
+<div class="nav-item" onclick="showPanel('security')"><span class="icon">🛡️</span>Security</div>
+<div class="nav-item" onclick="showPanel('system')"><span class="icon">📊</span>System</div>
+<div class="nav-item" onclick="showPanel('referral')"><span class="icon">🔗</span>Referrals</div>
+</div>
+<div class="nav-section">
+<div class="title">Agents</div>
+<div class="nav-item"><span class="icon">🧠</span>Zoey (Coordinator)</div>
+<div class="nav-item"><span class="icon">🔍</span>Atlas (Research)</div>
+<div class="nav-item"><span class="icon">💻</span>Nova (Code)</div>
+<div class="nav-item"><span class="icon">🎨</span>Pixel (Creative)</div>
+<div class="nav-item"><span class="icon">📊</span>Sage (Analysis)</div>
+</div>
+</div>
+<div class="sidebar-footer">
+<div class="user-info">
+<div class="user-avatar">{{ username[0] }}</div>
+<div>
+<div class="user-name">{{ username }}</div>
+<div class="user-role">Free Plan</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="main">
+<div class="main-header">
+<h2 id="panel-title">AI Chat</h2>
+<div class="header-actions">
+<button class="btn-icon" title="New Chat" onclick="newChat()">+</button>
+<button class="btn-icon" title="Settings">⚙</button>
+<a href="/logout" class="btn-icon" title="Sign Out" style="text-decoration:none">⏻</a>
+</div>
+</div>
+
+<div class="chat-area" id="chat-panel">
+<div class="agents-bar">
+<div class="agent-chip active" onclick="selectAgent('auto')">🧠 Auto</div>
+<div class="agent-chip" onclick="selectAgent('zoey')">Zoey</div>
+<div class="agent-chip" onclick="selectAgent('atlas')">Atlas</div>
+<div class="agent-chip" onclick="selectAgent('nova')">Nova</div>
+<div class="agent-chip" onclick="selectAgent('pixel')">Pixel</div>
+<div class="agent-chip" onclick="selectAgent('sage')">Sage</div>
+</div>
+<div class="messages" id="messages">
+<div class="message">
+<div class="avatar zoey">Z</div>
+<div class="bubble ai">
+<div class="agent-name">Zoey — Coordinator</div>
+Hey! I'm Zoey, your AI coordinator. I have a team ready to help:<br><br>
+🔍 <strong>Atlas</strong> — Research & facts<br>
+💻 <strong>Nova</strong> — Code & dev<br>
+🎨 <strong>Pixel</strong> — Creative & writing<br>
+📊 <strong>Sage</strong> — Data & analysis<br><br>
+What do you need?
+</div>
+</div>
+</div>
+<div class="input-area">
+<div class="input-row">
+<button class="voice-btn" id="voice-btn" onclick="toggleVoice()" title="Voice input">🎤</button>
+<input type="text" id="chat-input" placeholder="Ask anything..." onkeydown="if(event.key==='Enter')sendChat()">
+<button class="send-btn" onclick="sendChat()">→</button>
+</div>
+</div>
+</div>
+
+<div class="referral-panel" id="referral-panel">
+<div class="ref-card">
+<h3>Your Referral Code</h3>
+<div class="code" id="ref-code">Loading...</div>
+<h3>Share This Link</h3>
+<div class="link" id="ref-link">Loading...</div>
+</div>
+<div class="ref-card">
+<h3>Your Referrals</h3>
+<div id="ref-count" style="font-size:24px;font-weight:700;color:#10a37f;margin:12px 0">0</div>
+<div id="ref-list" style="color:#888;font-size:13px">No referrals yet</div>
+</div>
+</div>
+
+<div class="terminal-panel" id="terminal-panel" style="display:none;padding:24px;flex:1;overflow:hidden;flex-direction:column">
+<div style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.05);border-radius:12px;flex:1;display:flex;flex-direction:column;overflow:hidden">
+<div style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;gap:8px">
+<div style="width:12px;height:12px;border-radius:50%;background:#ef4444"></div>
+<div style="width:12px;height:12px;border-radius:50%;background:#f59e0b"></div>
+<div style="width:12px;height:12px;border-radius:50%;background:#10b981"></div>
+<span style="margin-left:12px;font-size:12px;color:#555;font-family:'JetBrains Mono',monospace">Terminal</span>
+</div>
+<div id="terminal-output" style="flex:1;overflow-y:auto;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#10a37f;line-height:1.6">
+<div style="color:#888">AI Power Farm Terminal v2.0</div>
+<div style="color:#888">Type commands or ask Zoey to run them.</div>
+<div style="color:#555;margin-top:8px">---</div>
+</div>
+<div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,0.05);display:flex;gap:8px">
+<span style="color:#10a37f;font-family:'JetBrains Mono',monospace">$</span>
+<input type="text" id="terminal-input" style="flex:1;background:transparent;border:none;color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;outline:none" placeholder="Enter command..." onkeydown="if(event.key==='Enter')runCommand()">
+</div>
+</div>
+</div>
+
+<div class="browser-panel" id="browser-panel" style="display:none;padding:24px;flex:1;overflow:hidden;flex-direction:column">
+<div style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.05);border-radius:12px;flex:1;display:flex;flex-direction:column;overflow:hidden">
+<div style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;gap:12px">
+<button onclick="goBack()" style="background:transparent;border:none;color:#888;cursor:pointer;font-size:16px">←</button>
+<button onclick="goForward()" style="background:transparent;border:none;color:#888;cursor:pointer;font-size:16px">→</button>
+<button onclick="refreshPage()" style="background:transparent;border:none;color:#888;cursor:pointer;font-size:16px">↻</button>
+<input type="text" id="browser-url" style="flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;outline:none" placeholder="Enter URL or search..." onkeydown="if(event.key==='Enter')navigateBrowser()">
+<button onclick="navigateBrowser()" style="background:linear-gradient(135deg,#10a37f,#0ea5e9);border:none;border-radius:8px;padding:8px 16px;color:#fff;font-size:13px;cursor:pointer">Go</button>
+</div>
+<div style="flex:1;background:#fff;display:flex;align-items:center;justify-content:center;color:#888">
+<iframe id="browser-frame" style="width:100%;height:100%;border:none;display:none"></iframe>
+<div id="browser-placeholder" style="text-align:center;color:#555">
+<div style="font-size:48px;margin-bottom:16px">🌐</div>
+<div>Enter a URL above or ask Zoey to open a website</div>
+<div style="font-size:12px;margin-top:8px">Try: "Play anime on Crunchyroll" or "Open YouTube"</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="security-panel" id="security-panel" style="display:none;padding:24px;overflow-y:auto;flex:1">
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px">
+<div class="ref-card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">🛡️</div>
+<h3>Firewall</h3>
+<div style="color:#10a37f;font-size:18px;font-weight:700;margin-top:8px">ACTIVE</div>
+</div>
+<div class="ref-card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">🔒</div>
+<h3>Encryption</h3>
+<div style="color:#10a37f;font-size:18px;font-weight:700;margin-top:8px">ENABLED</div>
+</div>
+<div class="ref-card" style="text-align:center">
+<div style="font-size:32px;margin-bottom:8px">👁️</div>
+<h3>Monitoring</h3>
+<div style="color:#10a37f;font-size:18px;font-weight:700;margin-top:8px">24/7</div>
+</div>
+</div>
+<div class="ref-card">
+<h3>Security Log</h3>
+<div id="security-log" style="font-size:13px;color:#888;line-height:1.8">
+<div style="color:#10a37f">✓ System protected</div>
+<div style="color:#10a37f">✓ Firewall active</div>
+<div style="color:#10a37f">✓ No intrusions detected</div>
+<div style="color:#10a37f">✓ API keys encrypted</div>
+<div style="color:#10a37f">✓ Sensitive files secured</div>
+</div>
+</div>
+<div class="ref-card">
+<h3>Suspicious Processes</h3>
+<div id="suspicious-list" style="font-size:13px;color:#888">No threats detected</div>
+</div>
+</div>
+
+<div class="system-panel" id="system-panel" style="display:none;padding:24px;overflow-y:auto;flex:1">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+<div class="ref-card">
+<h3>CPU Usage</h3>
+<div id="cpu-usage" style="font-size:32px;font-weight:700;color:#10a37f;margin:12px 0">0%</div>
+<div style="height:8px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden">
+<div id="cpu-bar" style="height:100%;background:linear-gradient(90deg,#10a37f,#0ea5e9);width:0%;transition:width .5s"></div>
+</div>
+</div>
+<div class="ref-card">
+<h3>Memory Usage</h3>
+<div id="mem-usage" style="font-size:32px;font-weight:700;color:#8b5cf6;margin:12px 0">0%</div>
+<div style="height:8px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden">
+<div id="mem-bar" style="height:100%;background:linear-gradient(90deg,#8b5cf6,#ec4899);width:0%;transition:width .5s"></div>
+</div>
+</div>
+</div>
+<div class="ref-card">
+<h3>Running Processes</h3>
+<div id="process-list" style="font-size:13px;color:#888;max-height:300px;overflow-y:auto">Loading...</div>
+</div>
+</div>
+
+<div class="files-panel" id="files-panel">
+<div class="file-manager">
+<div class="file-toolbar">
+<input type="text" id="file-path" placeholder="Enter path..." value="">
+<button onclick="loadFiles()">Go</button>
+<button onclick="createFolder()">New Folder</button>
+</div>
+<div id="file-list"></div>
+</div>
+</div>
+</div>
+
+<script>
+let currentAgent='auto';
+let conversations=JSON.parse(localStorage.getItem('ai_conversations')||'{}');
+let currentConv=null;
+
+function showPanel(name){
+document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+event.target.closest('.nav-item').classList.add('active');
+document.getElementById('chat-panel').style.display=name==='chat'?'flex':'none';
+document.getElementById('referral-panel').style.display=name==='referral'?'block':'none';
+document.getElementById('files-panel').style.display=name==='files'?'block':'none';
+document.getElementById('terminal-panel').style.display=name==='terminal'?'flex':'none';
+document.getElementById('browser-panel').style.display=name==='browser'?'flex':'none';
+document.getElementById('security-panel').style.display=name==='security'?'block':'none';
+document.getElementById('system-panel').style.display=name==='system'?'block':'none';
+const titles={chat:'AI Chat',terminal:'Terminal',browser:'Browser',files:'Files',security:'Security',system:'System',referral:'Referrals'};
+document.getElementById('panel-title').textContent=titles[name]||'AI Chat';
+if(name==='referral')loadReferral();
+if(name==='system'){updateSystem();updateProcesses();}
+if(name==='security')updateSecurity();
+}
+
+function selectAgent(agent){
+currentAgent=agent;
+document.querySelectorAll('.agent-chip').forEach(c=>c.classList.remove('active'));
+event.target.classList.add('active');
+}
+
+function newChat(){
+currentConv=Date.now().toString();
+conversations[currentConv]=[];
+localStorage.setItem('ai_conversations',JSON.stringify(conversations));
+document.getElementById('messages').innerHTML='';
+}
+
+async function sendChat(){
+const input=document.getElementById('chat-input');
+const msg=input.value.trim();
+if(!msg)return;
+input.value='';
+const el=document.getElementById('messages');
+el.innerHTML+=`<div class="message user"><div class="bubble human">${escHtml(msg)}</div><div class="avatar human">{{ username[0] }}</div></div>`;
+el.innerHTML+=`<div class="message" id="typing"><div class="avatar zoey">Z</div><div class="bubble ai"><div class="agent-name">Zoey — Thinking...</div><div class="typing-indicator"><span></span><span></span><span></span></div></div></div>`;
+el.scrollTop=el.scrollHeight;
+try{
+const r=await fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,agent:currentAgent})});
+const d=await r.json();
+document.getElementById('typing').remove();
+const agentColors={zoey:'zoey',atlas:'atlas',nova:'nova',pixel:'pixel',sage:'sage'};
+const agentNames={zoey:'Zoey',atlas:'Atlas',nova:'Nova',pixel:'Pixel',sage:'Sage'};
+const agentIcons={zoey:'Z',atlas:'A',nova:'N',pixel:'P',sage:'S'};
+const a=d.agent||'zoey';
+el.innerHTML+=`<div class="message"><div class="avatar ${agentColors[a]||'zoey'}">${agentIcons[a]||'Z'}</div><div class="bubble ai"><div class="agent-name">${agentNames[a]||'Zoey'} — ${a==='nova'?'Code Agent':a==='atlas'?'Research Agent':a==='pixel'?'Creative Agent':a==='sage'?'Analysis Agent':'Coordinator'}</div>${escHtml(d.reply||d.error)}</div></div>`;
+el.scrollTop=el.scrollHeight;
+}catch(e){
+document.getElementById('typing').remove();
+el.innerHTML+=`<div class="message"><div class="avatar zoey">Z</div><div class="bubble ai" style="color:#ef4444">Connection error. Please try again.</div></div>`;
+}
+}
+
+async function loadReferral(){
+try{
+const r=await fetch('/api/referral');
+const d=await r.json();
+document.getElementById('ref-code').textContent=d.referral_code;
+document.getElementById('ref-link').textContent=d.referral_link;
+document.getElementById('ref-count').textContent=d.total_referrals;
+document.getElementById('ref-list').innerHTML=d.referrals.length>0?d.referrals.map(r=>`<div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">${r.username} — joined ${new Date(r.joined).toLocaleDateString()}</div>`).join(''):'No referrals yet';
+}catch(e){}
+}
+
+async function loadFiles(){
+const path=document.getElementById('file-path').value||'~';
+try{
+const r=await fetch('/api/files/list',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path})});
+const d=await r.json();
+document.getElementById('file-list').innerHTML=d.items?d.items.map(i=>`<div class="file-item" onclick="${i.is_dir?`document.getElementById('file-path').value='${d.path}/${i.name}';loadFiles()`:''}"><span>${i.is_dir?'📁':'📄'}</span><span>${i.name}</span></div>`).join(''):'<div style="color:#555;text-align:center;padding:40px">Empty</div>';
+}catch(e){document.getElementById('file-list').innerHTML='<div style="color:#555;text-align:center;padding:40px">Failed to load</div>';}
+}
+
+async function createFolder(){
+const name=prompt('Folder name:');
+if(name){await fetch('/api/files/mkdir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:name})});loadFiles();}
+}
+
+let recognition=null;
+function toggleVoice(){
+const btn=document.getElementById('voice-btn');
+if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){alert('Voice not supported in this browser');return;}
+if(recognition){recognition.stop();recognition=null;btn.classList.remove('recording');return;}
+const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+recognition=new SpeechRecognition();
+recognition.continuous=false;
+recognition.interimResults=false;
+recognition.lang='en-US';
+recognition.onstart=()=>btn.classList.add('recording');
+recognition.onend=()=>{btn.classList.remove('recording');recognition=null;};
+recognition.onresult=(e)=>{document.getElementById('chat-input').value=e.results[0][0].transcript;};
+recognition.start();
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+
+async function runCommand(){
+const input=document.getElementById('terminal-input');
+const cmd=input.value.trim();
+if(!cmd)return;
+input.value='';
+const output=document.getElementById('terminal-output');
+output.innerHTML+=`<div><span style="color:#0ea5e9">$</span> ${escHtml(cmd)}</div>`;
+try{
+const r=await fetch('/api/terminal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({command:cmd})});
+const d=await r.json();
+if(d.stdout)output.innerHTML+=`<div style="color:#ccc;white-space:pre-wrap">${escHtml(d.stdout)}</div>`;
+if(d.stderr)output.innerHTML+=`<div style="color:#ef4444;white-space:pre-wrap">${escHtml(d.stderr)}</div>`;
+if(d.error)output.innerHTML+=`<div style="color:#ef4444">Error: ${escHtml(d.error)}</div>`;
+}catch(e){output.innerHTML+=`<div style="color:#ef4444">Connection error</div>`;}
+output.scrollTop=output.scrollHeight;
+}
+
+function navigateBrowser(){
+const url=document.getElementById('browser-url').value.trim();
+if(!url)return;
+let u=url;if(!u.startsWith('http'))u='https://'+u;
+document.getElementById('browser-frame').src=u;
+document.getElementById('browser-frame').style.display='block';
+document.getElementById('browser-placeholder').style.display='none';
+fetch('/api/browser/open',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:u})});
+}
+function goBack(){try{document.getElementById('browser-frame').contentWindow.history.back();}catch(e){}}
+function goForward(){try{document.getElementById('browser-frame').contentWindow.history.forward();}catch(e){}}
+function refreshPage(){try{document.getElementById('browser-frame').contentWindow.location.reload();}catch(e){}}
+
+async function updateSystem(){
+try{
+const r=await fetch('/api/system');const d=await r.json();
+if(d.cpu_percent!==undefined){document.getElementById('cpu-usage').textContent=d.cpu_percent+'%';document.getElementById('cpu-bar').style.width=d.cpu_percent+'%';}
+if(d.memory){const p=Math.round(d.memory.percent);document.getElementById('mem-usage').textContent=p+'%';document.getElementById('mem-bar').style.width=p+'%';}
+}catch(e){}
+}
+async function updateProcesses(){
+try{
+const r=await fetch('/api/processes');const procs=await r.json();
+document.getElementById('process-list').innerHTML=procs.slice(0,20).map(p=>
+`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.03)"><span>${p.name}</span><span style="color:#555">CPU:${p.cpu}% RAM:${p.memory}%</span></div>`
+).join('');
+}catch(e){}
+}
+async function updateSecurity(){
+try{
+const r=await fetch('/api/security');const d=await r.json();
+if(d.suspicious&&d.suspicious.length>0){
+document.getElementById('suspicious-list').innerHTML=d.suspicious.map(s=>
+`<div style="color:#f59e0b;padding:4px 0">⚠ ${s.name} (PID:${s.pid}) - ${s.reason}</div>`
+).join('');}else{document.getElementById('suspicious-list').innerHTML='<span style="color:#10a37f">No threats detected</span>';}
+}catch(e){}
+}
+
+setInterval(()=>{updateSystem();updateProcesses();updateSecurity();},5000);
+loadReferral();
+</script>
+</body>
+</html>
