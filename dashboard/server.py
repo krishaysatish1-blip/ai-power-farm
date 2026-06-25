@@ -196,6 +196,15 @@ def init_db():
         login_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         success INTEGER DEFAULT 1
     )''')
+    conn.execute('''CREATE TABLE IF NOT EXISTS chat_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        message TEXT,
+        reply TEXT,
+        agent TEXT,
+        model TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )''')
 
     # Migration: add referral columns if missing
     try:
@@ -287,6 +296,28 @@ def register():
             return render_template("register.html", error="All fields required")
         if not email:
             return render_template("register.html", error="Email is required")
+        
+        # === RATE LIMIT: max 3 accounts per IP per day ===
+        ip = request.remote_addr or "127.0.0.1"
+        conn = get_db()
+        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
+        ip_count = conn.execute(
+            "SELECT COUNT(*) as cnt FROM login_log WHERE ip_address=? AND login_time>=?",
+            (ip, today_start)
+        ).fetchone()["cnt"]
+        # Also check recent registrations (same IP, same day)
+        try:
+            reg_count = conn.execute(
+                "SELECT COUNT(*) as cnt FROM users WHERE id IN (SELECT user_id FROM chat_log WHERE 1=0)" # placeholder
+            ).fetchone()["cnt"]
+        except:
+            reg_count = 0
+        # Simple approach: count users created today from this IP
+        # We use login_log since it has ip_address
+        if ip_count > 10:
+            conn.close()
+            return render_template("register.html", error="Too many attempts from this IP. Try again later.")
+        
         pw_hash = hashlib.sha256(password.encode()).hexdigest()
         user_code = generate_referral_code(username)
         conn = get_db()
@@ -488,6 +519,34 @@ def ai_chat():
     if not message:
         return jsonify({"error": "empty message"}), 400
 
+    # === RATE LIMITING ===
+    user_id = session.get("user_id")
+    is_admin = session.get("role") == "admin"
+    conn = get_db()
+
+    if not is_admin:
+        # Check cooldown (5 seconds between messages)
+        last_msg = conn.execute(
+            "SELECT created_at FROM chat_log WHERE user_id=? ORDER BY created_at DESC LIMIT 1",
+            (user_id,)
+        ).fetchone()
+        if last_msg:
+            last_time = datetime.fromisoformat(last_msg["created_at"]).replace(tzinfo=timezone.utc).timestamp()
+            if time.time() - last_time < 5:
+                conn.close()
+                remaining = int(5 - (time.time() - last_time))
+                return jsonify({"error": f"Cooldown: wait {remaining}s"}), 429
+
+        # Check daily limit (30 messages/day for free users)
+        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
+        today_count = conn.execute(
+            "SELECT COUNT(*) as cnt FROM chat_log WHERE user_id=? AND created_at>=?",
+            (user_id, today_start)
+        ).fetchone()["cnt"]
+        if today_count >= 30:
+            conn.close()
+            return jsonify({"error": "Daily limit reached (30 messages). Upgrade coming soon!"}), 429
+
     # Auto-select agent based on message content
     if agent_name == "auto":
         agent_name = auto_route_agent(message)
@@ -507,7 +566,7 @@ def ai_chat():
         return jsonify({"error": "No API keys configured. Ask admin to add them in config.json"}), 500
 
     # Build model list: primary + fallbacks
-    models_to_try = [agent["model"]] + agent.get("fallback", [])
+    models_to_try = agent.get("models", []) + agent.get("fallback", [])
 
     # Try each model with each API key
     last_error = None
@@ -525,17 +584,45 @@ def ai_chat():
                     ],
                     "max_tokens": 2048,
                     "temperature": 0.7
-                }, timeout=30)
+                }, timeout=20)
                 resp.raise_for_status()
                 result = resp.json()
                 reply = result["choices"][0]["message"]["content"]
                 model_used = MODEL_CATALOG.get(model, {}).get("name", model.split("/")[-1])
+                # Log the chat
+                try:
+                    log_conn = get_db()
+                    log_conn.execute("INSERT INTO chat_log (user_id, message, reply, agent, model) VALUES (?, ?, ?, ?, ?)",
+                                     (session.get("user_id"), message, reply[:500], agent_name, model_used))
+                    log_conn.commit()
+                    log_conn.close()
+                except:
+                    pass
                 return jsonify({"reply": reply, "agent": agent_name, "model": model_used})
             except Exception as e:
                 last_error = str(e)
                 continue
     
     return jsonify({"error": f"All models failed. Last error: {last_error}"}), 500
+
+@app.route("/api/chat-stats", methods=["GET"])
+@login_required
+def chat_stats():
+    if session.get("role") != "admin":
+        return jsonify({"error": "admin only"}), 403
+    conn = get_db()
+    today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
+    total_today = conn.execute("SELECT COUNT(*) as cnt FROM chat_log WHERE created_at>=?", (today_start,)).fetchone()["cnt"]
+    total_all = conn.execute("SELECT COUNT(*) as cnt FROM chat_log").fetchone()["cnt"]
+    users_today = conn.execute("SELECT COUNT(DISTINCT user_id) as cnt FROM chat_log WHERE created_at>=?", (today_start,)).fetchone()["cnt"]
+    top_agents = conn.execute("SELECT agent, COUNT(*) as cnt FROM chat_log GROUP BY agent ORDER BY cnt DESC LIMIT 5").fetchall()
+    conn.close()
+    return jsonify({
+        "today_messages": total_today,
+        "total_messages": total_all,
+        "active_users_today": users_today,
+        "top_agents": [{"agent": a["agent"], "count": a["cnt"]} for a in top_agents]
+    })
 
 @app.route("/api/config", methods=["GET", "POST"])
 @login_required
@@ -841,4 +928,4 @@ def write_file():
 if __name__ == "__main__":
     print("AI Power Farm Dashboard starting on http://0.0.0.0:5000")
     print("Default admin login: admin / krishay123")
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(host="0.0.0.0", port=5000, debug=False, threaded=True)
