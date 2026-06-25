@@ -70,7 +70,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <button onclick="showPanel('terminal')" title="Terminal">⌨</button>
   <button onclick="showPanel('files')" title="Files">📁</button>
   <button onclick="showPanel('referral')" title="Referral">🔗</button>
-  <button onclick="showPanel('system')" title="System">⚙</button>
   <div style="flex:1"></div>
   <button onclick="window.location='/logout'" title="Sign out" style="font-size:14px">⏻</button>
 </div>
@@ -134,17 +133,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     </div>
   </div>
 
-  <!-- SYSTEM -->
-  <div class="panels" id="panel-system">
-    <div class="panel-card">
-      <h3>System Status</h3>
-      <div class="row"><span>GPU</span><span id="sys-gpu">...</span></div>
-      <div class="row"><span>Hashrate</span><span id="sys-hash">...</span></div>
-      <div class="row"><span>Mining</span><span id="sys-mine">...</span></div>
-      <div class="row"><span>CPU</span><span id="sys-cpu">...</span></div>
-      <div class="row"><span>RAM</span><span id="sys-ram">...</span></div>
-    </div>
-  </div>
 </div>
 
 <script>
@@ -154,7 +142,6 @@ function showPanel(name){
   document.querySelectorAll('.sidebar button').forEach(b=>b.classList.remove('active'));
   event.currentTarget.classList.add('active');
   if(name==='referral')loadReferral();
-  if(name==='system')loadSystem();
   if(name==='files')loadFiles();
 }
 
@@ -228,21 +215,6 @@ function copyRef(){
   navigator.clipboard.writeText(document.getElementById('ref-code-text').textContent);
   document.querySelector('.copy-btn').textContent='Copied!';
   setTimeout(()=>document.querySelector('.copy-btn').textContent='Copy',2000);
-}
-
-async function loadSystem(){
-  try{
-    const r=await fetch('/api/workers');
-    const d=await r.json();
-    if(d.length){
-      const w=d[0];
-      document.getElementById('sys-gpu').textContent=w.gpu_name||'N/A';
-      document.getElementById('sys-hash').textContent=(w.hashrate||0).toFixed(1)+' MH/s';
-      document.getElementById('sys-mine').textContent=w.status||'offline';
-      document.getElementById('sys-cpu').textContent=w.temperature+'°C';
-      document.getElementById('sys-ram').textContent=w.power_usage+'W';
-    }
-  }catch(e){}
 }
 
 async function loadFiles(){

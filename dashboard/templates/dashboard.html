@@ -7,54 +7,59 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#1a1a2e;color:#e0e0e0;min-height:100vh}
-.navbar{padding:16px 32px;display:flex;justify-content:space-between;align-items:center;background:#16213e;border-bottom:1px solid #2a2a3e;position:sticky;top:0;z-index:100}
-.navbar .logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;letter-spacing:-.5px}
-.navbar .logo .dot{width:8px;height:8px;background:#7c3aed;border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 10px #7c3aed}50%{opacity:.5;box-shadow:0 0 20px #7c3aed}}
+.navbar{padding:12px 32px;display:flex;justify-content:space-between;align-items:center;background:#16213e;border-bottom:1px solid #2a2a3e;position:sticky;top:0;z-index:100}
+.navbar .logo{font-size:18px;font-weight:700;letter-spacing:-.5px}
 .navbar .right{display:flex;align-items:center;gap:16px}
 .navbar .right span{color:#7a7a8a;font-size:13px}
 .btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;transition:all .15s;border:none}
 .btn-primary{background:#7c3aed;color:#fff}
 .btn-ghost{background:transparent;color:#7a7a8a;border:1px solid #2a2a3e}
 .btn-ghost:hover{border-color:#7c3aed;color:#e0e0e0}
-.container{max-width:1400px;margin:0 auto;padding:24px}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
-.stat-card{background:#16213e;border:1px solid #2a2a3e;border-radius:12px;padding:24px;position:relative;overflow:hidden}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,.3),transparent)}
-.stat-card .label{font-size:12px;color:#7a7a8a;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
-.stat-card .value{font-size:32px;font-weight:700}
-.stat-card .unit{font-size:12px;color:#7a7a8a;margin-left:4px}
-.stat-green{color:#22c55e}.stat-blue{color:#3b82f6}.stat-purple{color:#a855f7}.stat-orange{color:#f97316}
-.section{background:#16213e;border:1px solid #2a2a3e;border-radius:12px;margin-bottom:24px;overflow:hidden}
-.section-header{padding:16px 24px;border-bottom:1px solid #2a2a3e;display:flex;justify-content:space-between;align-items:center}
-.section-header h2{font-size:15px;font-weight:600}
-.section-body{padding:24px}
-.tabs{display:flex;gap:4px;padding:0 24px;border-bottom:1px solid #2a2a3e}
-.tab{padding:12px 20px;cursor:pointer;font-size:13px;color:#7a7a8a;border-bottom:2px solid transparent;transition:all .15s}
+.tabs{display:flex;gap:0;background:#16213e;border-bottom:1px solid #2a2a3e;padding:0 32px}
+.tab{padding:14px 24px;cursor:pointer;font-size:14px;color:#7a7a8a;border-bottom:2px solid transparent;transition:all .15s;font-weight:500}
 .tab:hover{color:#e0e0e0}
 .tab.active{color:#a855f7;border-bottom-color:#a855f7}
-.tab-content{display:none}
-.tab-content.active{display:block}
-.worker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.view{display:none;padding:24px 32px;max-width:1400px;margin:0 auto}
+.view.active{display:block}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:#16213e;border:1px solid #2a2a3e;border-radius:12px;padding:20px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,.3),transparent)}
+.stat-card .label{font-size:11px;color:#7a7a8a;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.stat-card .value{font-size:28px;font-weight:700}
+.stat-card .unit{font-size:11px;color:#7a7a8a;margin-left:4px}
+.stat-green{color:#22c55e}.stat-blue{color:#3b82f6}.stat-purple{color:#a855f7}.stat-orange{color:#f97316}
+.section{background:#16213e;border:1px solid #2a2a3e;border-radius:12px;margin-bottom:20px;overflow:hidden}
+.section-header{padding:14px 20px;border-bottom:1px solid #2a2a3e;display:flex;justify-content:space-between;align-items:center}
+.section-header h2{font-size:14px;font-weight:600}
+.section-body{padding:20px}
+.worker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
 .worker-card{background:rgba(255,255,255,.02);border:1px solid #2a2a3e;border-radius:10px;padding:16px;position:relative}
 .worker-card .status-dot{width:8px;height:8px;border-radius:50%;position:absolute;top:16px;right:16px}
 .worker-card .status-dot.online{background:#22c55e;box-shadow:0 0 8px #22c55e}
 .worker-card .status-dot.offline{background:#ef4444;box-shadow:0 0 8px #ef4444}
-.worker-card h3{font-size:14px;margin-bottom:12px;padding-right:20px}
+.worker-card h3{font-size:14px;margin-bottom:10px;padding-right:20px}
 .worker-card .gpu{font-size:12px;color:#a855f7;margin-bottom:8px}
-.worker-card .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.worker-card .stats{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .worker-card .stat{font-size:12px;color:#7a7a8a}
 .worker-card .stat span{color:#e0e0e0}
 .no-workers{text-align:center;color:#7a7a8a;padding:40px;font-size:14px}
-.chat-panel{display:flex;flex-direction:column;height:400px}
+.chat-panel{display:flex;flex-direction:column;height:500px}
 .chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
-.chat-msg{max-width:80%;padding:12px 16px;border-radius:12px;font-size:13px;line-height:1.5}
-.chat-msg.user{align-self:flex-end;background:#7c3aed;color:#fff}
-.chat-msg.ai{align-self:flex-start;background:#0f3460;border:1px solid #2a2a3e}
+.chat-messages::-webkit-scrollbar{width:5px}
+.chat-messages::-webkit-scrollbar-thumb{background:#2a2a3e;border-radius:3px}
+.msg{max-width:80%;padding:12px 16px;border-radius:12px;font-size:14px;line-height:1.6;white-space:pre-wrap}
+.msg.user{align-self:flex-end;background:#7c3aed;color:#fff;border-bottom-right-radius:4px}
+.msg.ai{align-self:flex-start;background:#0f3460;border:1px solid #2a2a3e;border-bottom-left-radius:4px}
+.msg.error{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+.msg .model-tag{font-size:10px;color:#7a7a8a;margin-top:6px;display:block}
+.typing{display:flex;gap:4px;padding:12px 16px}
+.typing span{width:6px;height:6px;background:#a855f7;border-radius:50%;animation:bounce .6s infinite alternate}
+.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{to{opacity:.3;transform:translateY(-4px)}}
 .chat-input-row{display:flex;gap:8px;padding:12px 16px;border-top:1px solid #2a2a3e}
-.chat-input-row input{flex:1;padding:10px 14px;background:#1e1e3a;border:1px solid #2a2a3e;border-radius:8px;color:#e0e0e0;font-size:13px;outline:none}
+.chat-input-row input{flex:1;padding:10px 14px;background:#1e1e3a;border:1px solid #2a2a3e;border-radius:8px;color:#e0e0e0;font-size:14px;outline:none}
 .chat-input-row input:focus{border-color:#7c3aed}
-.chat-input-row button{padding:10px 20px;background:#7c3aed;border:none;border-radius:8px;color:#fff;font-size:13px;cursor:pointer}
+.chat-input-row button{padding:10px 20px;background:#7c3aed;border:none;border-radius:8px;color:#fff;font-size:14px;cursor:pointer;font-weight:500}
 .activity-list{max-height:300px;overflow-y:auto}
 .activity-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:13px}
 .activity-item:last-child{border-bottom:none}
@@ -71,69 +76,125 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .config-row label{font-size:13px;color:#7a7a8a;min-width:140px}
 .config-row input{flex:1;padding:8px 12px;background:#1e1e3a;border:1px solid #2a2a3e;border-radius:6px;color:#e0e0e0;font-size:13px;outline:none}
 .save-btn{padding:8px 20px;background:#7c3aed;border:none;border-radius:6px;color:#fff;font-size:13px;font-weight:500;cursor:pointer}
-@media(max-width:768px){.stats-grid{grid-template-columns:1fr 1fr}.worker-grid{grid-template-columns:1fr}}
+.pool-info{font-size:13px;color:#7a7a8a;line-height:2}
+.pool-info span{color:#22c55e}
+@media(max-width:768px){.stats-grid{grid-template-columns:1fr 1fr}.worker-grid{grid-template-columns:1fr}.tabs{overflow-x:auto}}
 </style>
 </head>
 <body>
 <div class="navbar">
-<div class="logo"><div class="dot"></div>Jarvis</div>
+<div class="logo">Jarvis</div>
 <div class="right">
-<button class="btn btn-primary" onclick="showFarm()" id="farm-btn">Mining</button>
 <span>Welcome, <strong>{{ username }}</strong></span>
+<a href="/logout" class="btn btn-ghost" style="font-size:12px">Sign out</a>
 </div>
 </div>
 
-<div class="container">
+<div class="tabs">
+<div class="tab active" onclick="switchView('overview')">Overview</div>
+<div class="tab" onclick="switchView('ai')">AI Chat</div>
+<div class="tab" onclick="switchView('mining')">Mining</div>
+<div class="tab" onclick="switchView('users')">Users</div>
+<div class="tab" onclick="switchView('settings')">Settings</div>
+</div>
+
+<!-- OVERVIEW -->
+<div class="view active" id="view-overview">
 <div class="stats-grid">
 <div class="stat-card"><div class="label">Hashrate</div><div class="value stat-green" id="stat-hashrate">0<span class="unit">MH/s</span></div></div>
 <div class="stat-card"><div class="label">Workers</div><div class="value stat-blue" id="stat-online">0<span class="unit" id="stat-total">/0</span></div></div>
 <div class="stat-card"><div class="label">Power</div><div class="value stat-purple" id="stat-power">0<span class="unit">W</span></div></div>
 <div class="stat-card"><div class="label">ETC Earned</div><div class="value stat-orange" id="stat-etc">0<span class="unit">ETC</span></div></div>
 </div>
-
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
 <div class="section">
-<div class="section-header"><h2>Workers</h2><span id="worker-count" style="color:#7a7a8a;font-size:13px"></span></div>
+<div class="section-header"><h2>Workers</h2></div>
 <div class="section-body">
-<div class="worker-grid" id="worker-grid">
-<div class="no-workers">Waiting for workers...</div>
+<div class="worker-grid" id="worker-grid"><div class="no-workers">Waiting...</div></div>
+</div>
+</div>
+<div class="section">
+<div class="section-header"><h2>Recent Logins</h2></div>
+<div class="section-body">
+<div class="activity-list" id="activity-list"><div style="color:#7a7a8a;text-align:center;padding:20px">No activity</div></div>
+</div>
 </div>
 </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
-<div class="section">
-<div class="section-header"><h2>Jarvis</h2><span style="color:#7a7a8a;font-size:12px">AI Assistant</span></div>
-<div class="section-body" style="padding:0">
-<div class="chat-panel">
+<!-- AI CHAT -->
+<div class="view" id="view-ai">
+<div style="display:grid;grid-template-columns:1fr 320px;gap:20px;height:calc(100vh - 140px)">
+<div class="section" style="margin:0;display:flex;flex-direction:column">
+<div class="section-header"><h2>Jarvis</h2><span style="color:#7a7a8a;font-size:12px">50+ models • auto-routing</span></div>
+<div class="section-body" style="padding:0;flex:1;display:flex;flex-direction:column">
+<div class="chat-panel" style="height:100%">
 <div class="chat-messages" id="chat-messages">
-<div class="chat-msg ai">I'm Jarvis. Ask me anything.</div>
+<div class="msg ai">I'm Jarvis. Ask me anything — code, research, writing, analysis.</div>
 </div>
 <div class="chat-input-row">
-<input type="text" id="chat-input" placeholder="Ask something..." onkeydown="if(event.key==='Enter')sendChat()">
+<input type="text" id="chat-input" placeholder="Ask Jarvis..." onkeydown="if(event.key==='Enter')sendChat()">
 <button onclick="sendChat()">Send</button>
 </div>
 </div>
 </div>
 </div>
-
-<div class="section">
-<div class="section-header"><h2>Login Activity</h2></div>
+<div style="display:flex;flex-direction:column;gap:20px">
+<div class="section" style="margin:0">
+<div class="section-header"><h2>Chat Stats</h2></div>
 <div class="section-body">
-<div class="activity-list" id="activity-list">
-<div style="color:#7a7a8a;font-size:13px;text-align:center;padding:20px">No activity yet</div>
+<div class="stats-grid" style="grid-template-columns:1fr 1fr;margin:0">
+<div class="stat-card"><div class="label">Today</div><div class="value stat-blue" id="chat-today">0</div></div>
+<div class="stat-card"><div class="label">All Time</div><div class="value stat-green" id="chat-total">0</div></div>
+</div>
+</div>
+</div>
+<div class="section" style="margin:0">
+<div class="section-header"><h2>Referrals</h2></div>
+<div class="section-body">
+<div class="pool-info">Top referrer: <span id="ref-top">-</span></div>
+<div class="pool-info">Total: <span id="ref-total">0</span></div>
+</div>
 </div>
 </div>
 </div>
 </div>
 
-<div class="section">
-<div class="tabs">
-<div class="tab active" onclick="switchTab('users')">Users</div>
-<div class="tab" onclick="switchTab('referrals')">Referrals</div>
-<div class="tab" onclick="switchTab('config')">Settings</div>
+<!-- MINING -->
+<div class="view" id="view-mining">
+<div class="stats-grid">
+<div class="stat-card"><div class="label">Hashrate</div><div class="value stat-green" id="farm-hashrate">0<span class="unit">MH/s</span></div></div>
+<div class="stat-card"><div class="label">Workers Online</div><div class="value stat-blue" id="farm-workers">0</div></div>
+<div class="stat-card"><div class="label">ETC Earned</div><div class="value stat-orange" id="farm-etc">0<span class="unit">ETC</span></div></div>
+<div class="stat-card"><div class="label">Daily Est.</div><div class="value stat-purple" id="farm-daily">~0<span class="unit">/day</span></div></div>
 </div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+<div class="section">
+<div class="section-header"><h2>Workers</h2></div>
 <div class="section-body">
-<div class="tab-content active" id="tab-users">
+<div class="worker-grid" id="farm-worker-grid"><div class="no-workers">No workers</div></div>
+</div>
+</div>
+<div class="section">
+<div class="section-header"><h2>Pool Info</h2></div>
+<div class="section-body">
+<div class="pool-info">
+<div>Pool: <span>etc.2miners.com</span></div>
+<div>Coin: <span>ETC (Ethereum Classic)</span></div>
+<div>Wallet: <span>0x11CF2...90177</span></div>
+<div>Miner: <span>lolMiner 1.98</span></div>
+<div>Algorithm: <span>Etchash</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- USERS -->
+<div class="view" id="view-users">
+<div class="section">
+<div class="section-header"><h2>User Management</h2></div>
+<div class="section-body">
 <div class="add-user-form">
 <input type="text" id="new-user" placeholder="Username">
 <input type="email" id="new-email" placeholder="Email">
@@ -145,18 +206,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <tbody id="user-list"></tbody>
 </table>
 </div>
-<div class="tab-content" id="tab-referrals">
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-<div class="stat-card"><div class="label">Total Referrals</div><div class="value stat-blue" id="ref-total">0</div></div>
-<div class="stat-card"><div class="label">Top Referrer</div><div class="value stat-green" id="ref-top">-</div></div>
 </div>
-<h3 style="font-size:14px;margin-bottom:12px;color:#7a7a8a">Leaderboard</h3>
+<div class="section">
+<div class="section-header"><h2>Referral Leaderboard</h2></div>
+<div class="section-body">
 <table class="user-table">
 <thead><tr><th>User</th><th>Referrals</th></tr></thead>
 <tbody id="referral-list"></tbody>
 </table>
 </div>
-<div class="tab-content" id="tab-config">
+</div>
+</div>
+
+<!-- SETTINGS -->
+<div class="view" id="view-settings">
+<div class="section">
+<div class="section-header"><h2>Settings</h2></div>
+<div class="section-body">
 <div class="config-row"><label>NVIDIA API Keys</label><input type="password" id="cfg-apikey" placeholder="nvapi-..."></div>
 <div class="config-row"><label>Google Client ID</label><input type="text" id="cfg-google-id" placeholder="Google OAuth Client ID"></div>
 <div class="config-row"><label>Google Client Secret</label><input type="password" id="cfg-google-secret" placeholder="Google OAuth Secret"></div>
@@ -164,62 +230,62 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 </div>
 </div>
-</div>
-
-<!-- Mining Panel -->
-<div id="farm-panel" style="display:none">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
-<h2 style="font-size:20px;color:#a855f7">Mining Dashboard</h2>
-<button class="btn btn-ghost" onclick="hideFarm()">Back</button>
-</div>
-<div class="stats-grid">
-<div class="stat-card"><div class="label">Hashrate</div><div class="value stat-green" id="farm-hashrate">0<span class="unit">MH/s</span></div></div>
-<div class="stat-card"><div class="label">Workers</div><div class="value stat-blue" id="farm-workers">0</div></div>
-<div class="stat-card"><div class="label">ETC Earned</div><div class="value stat-orange" id="farm-etc">0<span class="unit">ETC</span></div></div>
-<div class="stat-card"><div class="label">Daily Est.</div><div class="value stat-purple" id="farm-daily">~0<span class="unit">/day</span></div></div>
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
-<div class="section">
-<div class="section-header"><h2>Workers</h2></div>
-<div class="section-body">
-<div class="worker-grid" id="farm-worker-grid"><div class="no-workers">No workers</div></div>
-</div>
-</div>
-<div class="section">
-<div class="section-header"><h2>Pool</h2></div>
-<div class="section-body">
-<div style="font-size:13px;color:#7a7a8a;line-height:2">
-<div>Pool: <span style="color:#22c55e">etc.2miners.com</span></div>
-<div>Coin: <span style="color:#22c55e">ETC</span></div>
-<div>Wallet: <span style="color:#22c55e;font-family:monospace">0x11CF2...90177</span></div>
-<div>Miner: <span style="color:#22c55e">lolMiner 1.98</span></div>
-<div>Algorithm: <span style="color:#22c55e">Etchash</span></div>
-</div>
-</div>
-</div>
-</div>
-</div>
 
 <script>
-function showFarm(){document.getElementById('farm-panel').style.display='block';document.querySelector('.container').style.display='none';loadFarmData()}
-function hideFarm(){document.getElementById('farm-panel').style.display='none';document.querySelector('.container').style.display='block'}
-async function loadFarmData(){try{const r=await fetch('/api/stats');const d=await r.json();document.getElementById('farm-hashrate').innerHTML=(d.total_hashrate||0).toFixed(2)+'<span class="unit">MH/s</span>';document.getElementById('farm-workers').textContent=d.online_workers||0;document.getElementById('farm-etc').innerHTML=(d.etc_earned||0).toFixed(6)+'<span class="unit">ETC</span>';document.getElementById('farm-daily').innerHTML='~₹'+(((d.etc_earned||0)*22)/(Math.max(1,(Date.now()-new Date('2026-06-24').getTime())/(86400000)))).toFixed(0)+'<span class="unit">/day</span>';const wr=await fetch('/api/workers');const workers=await wr.json();document.getElementById('farm-worker-grid').innerHTML=workers.length>0?workers.map(w=>`<div class="worker-card"><div class="status-dot ${w.status==='online'?'online':'offline'}"></div><h3>${w.display_name||w.hostname}</h3><div class="gpu">${w.gpu_name||'Unknown GPU'}</div><div class="stats"><div class="stat">Hashrate: <span>${(w.hashrate||0).toFixed(2)} MH/s</span></div><div class="stat">Status: <span>${w.status}</span></div></div></div>`).join(''):'<div class="no-workers">No workers</div>';}catch(e){}}
-setInterval(loadFarmData,10000);
+function switchView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if(name==='ai')loadChatStats();
+  if(name==='mining')loadFarmData();
+  if(name==='users'){loadUsers();loadReferrals();}
+}
 
-function switchTab(name){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));event.target.classList.add('active');document.getElementById('tab-'+name).classList.add('active')}
-async function fetchStats(){try{const r=await fetch('/api/stats');const d=await r.json();document.getElementById('stat-hashrate').innerHTML=d.total_hashrate+'<span class="unit">MH/s</span>';document.getElementById('stat-online').innerHTML=d.online_workers+'<span class="unit">/'+d.total_workers+'</span>';document.getElementById('stat-power').innerHTML=d.total_power+'<span class="unit">W</span>';document.getElementById('stat-etc').innerHTML=d.etc_earned+'<span class="unit">ETC</span>';}catch(e){}}
-async function fetchWorkers(){try{const r=await fetch('/api/workers');const workers=await r.json();const grid=document.getElementById('worker-grid');if(!workers.length){grid.innerHTML='<div class="no-workers">Waiting for workers...</div>';return}grid.innerHTML=workers.map(w=>`<div class="worker-card"><div class="status-dot ${w.is_online?'online':'offline'}"></div><h3>${w.display_name||w.hostname||w.worker_id}</h3><div class="gpu">${w.gpu_name||'Unknown GPU'} (${w.gpu_count||0}x) &bull; ${w.coin||'ETC'}</div><div class="stats"><div class="stat"><span>Hashrate:</span> ${w.hashrate} MH/s</div><div class="stat"><span>Power:</span> ${w.power_usage}W</div><div class="stat"><span>Temp:</span> ${w.temperature}C</div><div class="stat"><span>Status:</span> ${w.status}</div></div></div>`).join('');document.getElementById('worker-count').textContent=workers.length+' total';}catch(e){}}
-async function fetchActivity(){try{const r=await fetch('/api/active-logins');const logs=await r.json();const el=document.getElementById('activity-list');if(!logs.length)return;el.innerHTML=logs.map(l=>`<div class="activity-item"><span><span class="user">${l.username}</span> from ${l.ip_address}</span><span class="time">${new Date(l.login_time).toLocaleString()}</span></div>`).join('');}catch(e){}}
-async function sendChat(){const input=document.getElementById('chat-input');const msg=input.value.trim();if(!msg)return;input.value='';const msgs=document.getElementById('chat-messages');msgs.innerHTML+=`<div class="chat-msg user">${escHtml(msg)}</div>`;msgs.innerHTML+=`<div class="chat-msg ai" id="typing">Thinking...</div>`;msgs.scrollTop=msgs.scrollHeight;try{const r=await fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})});const d=await r.json();document.getElementById('typing').remove();msgs.innerHTML+=`<div class="chat-msg ai">${escHtml(d.reply||d.error)}</div>`;msgs.scrollTop=msgs.scrollHeight;}catch(e){document.getElementById('typing').remove();msgs.innerHTML+=`<div class="chat-msg ai" style="color:#ef4444">Error: ${e.message}</div>`;}}
-function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
-async function loadUsers(){try{const r=await fetch('/api/users');const users=await r.json();document.getElementById('user-list').innerHTML=users.map(u=>`<tr><td>${u.username}</td><td>${u.email||'-'}</td><td>${u.role}</td><td style="font-family:monospace;font-size:11px">${u.referral_code||'-'}</td><td>${u.access_expires?new Date(u.access_expires).toLocaleDateString():'-'}</td><td>${u.referred_by||'-'}</td><td>${u.role!=='admin'?'<button class="del-btn" onclick="delUser('+u.id+')">Delete</button>':''}</td></tr>`).join('');}catch(e){}}
-async function addUser(){const username=document.getElementById('new-user').value.trim();const email=document.getElementById('new-email').value.trim();const password=document.getElementById('new-pass').value;if(!username||!password||!email)return alert('Fill all fields');try{const r=await fetch('/api/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,email,password})});const d=await r.json();if(d.error)return alert(d.error);document.getElementById('new-user').value='';document.getElementById('new-email').value='';document.getElementById('new-pass').value='';loadUsers();}catch(e){alert(e.message)}}
+// Overview stats
+async function fetchStats(){try{const r=await fetch('/api/stats');const d=await r.json();document.getElementById('stat-hashrate').innerHTML=(d.total_hashrate||0)+'<span class="unit">MH/s</span>';document.getElementById('stat-online').innerHTML=(d.online_workers||0)+'<span class="unit">/'+(d.total_workers||0)+'</span>';document.getElementById('stat-power').innerHTML=(d.total_power||0)+'<span class="unit">W</span>';document.getElementById('stat-etc').innerHTML=(d.etc_earned||0)+'<span class="unit">ETC</span>';}catch(e){}}
+async function fetchWorkers(){try{const r=await fetch('/api/workers');const w=await r.json();const g=document.getElementById('worker-grid');if(!w.length){g.innerHTML='<div class="no-workers">Waiting...</div>';return}g.innerHTML=w.map(x=>`<div class="worker-card"><div class="status-dot ${x.is_online?'online':'offline'}"></div><h3>${x.display_name||x.hostname||x.worker_id}</h3><div class="gpu">${x.gpu_name||'?'} (${x.gpu_count||0}x) • ${x.coin||'ETC'}</div><div class="stats"><div class="stat"><span>Hashrate:</span> ${x.hashrate} MH/s</div><div class="stat"><span>Power:</span> ${x.power_usage}W</div><div class="stat"><span>Temp:</span> ${x.temperature}C</div><div class="stat"><span>Status:</span> ${x.status}</div></div></div>`).join('');}catch(e){}}
+async function fetchActivity(){try{const r=await fetch('/api/active-logins');const l=await r.json();const e=document.getElementById('activity-list');if(!l.length)return;e.innerHTML=l.map(x=>`<div class="activity-item"><span><span class="user">${x.username}</span> from ${x.ip_address}</span><span class="time">${new Date(x.login_time).toLocaleString()}</span></div>`).join('');}catch(e){}}
+
+// AI Chat
+async function sendChat(){
+  const input=document.getElementById('chat-input');
+  const msg=input.value.trim();
+  if(!msg)return;
+  input.value='';
+  const msgs=document.getElementById('chat-messages');
+  msgs.innerHTML+=`<div class="msg user">${esc(msg)}</div>`;
+  msgs.innerHTML+=`<div class="msg" id="typing"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  msgs.scrollTop=msgs.scrollHeight;
+  try{
+    const r=await fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})});
+    const d=await r.json();
+    document.getElementById('typing').remove();
+    if(d.error){msgs.innerHTML+=`<div class="msg error">${esc(d.error)}</div>`;}
+    else{msgs.innerHTML+=`<div class="msg ai">${formatAI(d.reply)}<span class="model-tag">${d.model||''}</span></div>`;}
+    msgs.scrollTop=msgs.scrollHeight;
+  }catch(e){document.getElementById('typing').remove();msgs.innerHTML+=`<div class="msg error">Error: ${e.message}</div>`;}
+}
+function formatAI(t){t=esc(t);t=t.replace(/```(\w*)\n([\s\S]*?)```/g,'<pre style="background:#0d1117;padding:12px;border-radius:8px;overflow-x:auto;margin:8px 0"><code>$2</code></pre>');t=t.replace(/`([^`]+)`/g,'<code style="background:rgba(124,58,237,.2);padding:1px 5px;border-radius:4px">$1</code>');t=t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');return t}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+async function loadChatStats(){try{const r=await fetch('/api/chat-stats');const d=await r.json();document.getElementById('chat-today').textContent=d.today_messages||0;document.getElementById('chat-total').textContent=d.total_messages||0;}catch(e){}}
+
+// Mining
+async function loadFarmData(){try{const r=await fetch('/api/stats');const d=await r.json();document.getElementById('farm-hashrate').innerHTML=(d.total_hashrate||0).toFixed(2)+'<span class="unit">MH/s</span>';document.getElementById('farm-workers').textContent=d.online_workers||0;document.getElementById('farm-etc').innerHTML=(d.etc_earned||0).toFixed(6)+'<span class="unit">ETC</span>';document.getElementById('farm-daily').innerHTML='~₹'+(((d.etc_earned||0)*22)/(Math.max(1,(Date.now()-new Date('2026-06-24').getTime())/(86400000)))).toFixed(0)+'<span class="unit">/day</span>';const wr=await fetch('/api/workers');const w=await wr.json();document.getElementById('farm-worker-grid').innerHTML=w.length?w.map(x=>`<div class="worker-card"><div class="status-dot ${x.status==='online'?'online':'offline'}"></div><h3>${x.display_name||x.hostname}</h3><div class="gpu">${x.gpu_name||'?'}</div><div class="stats"><div class="stat">Hashrate: <span>${(x.hashrate||0).toFixed(2)} MH/s</span></div><div class="stat">Status: <span>${x.status}</span></div></div></div>`).join(''):'<div class="no-workers">No workers</div>';}catch(e){}}
+
+// Users
+async function loadUsers(){try{const r=await fetch('/api/users');const u=await r.json();document.getElementById('user-list').innerHTML=u.map(x=>`<tr><td>${x.username}</td><td>${x.email||'-'}</td><td>${x.role}</td><td style="font-family:monospace;font-size:11px">${x.referral_code||'-'}</td><td>${x.access_expires?new Date(x.access_expires).toLocaleDateString():'-'}</td><td>${x.referred_by||'-'}</td><td>${x.role!=='admin'?'<button class="del-btn" onclick="delUser('+x.id+')">Del</button>':''}</td></tr>`).join('');}catch(e){}}
+async function addUser(){const u=document.getElementById('new-user').value.trim(),e=document.getElementById('new-email').value.trim(),p=document.getElementById('new-pass').value;if(!u||!p||!e)return alert('Fill all');try{const r=await fetch('/api/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,email:e,password:p})});const d=await r.json();if(d.error)return alert(d.error);document.getElementById('new-user').value='';document.getElementById('new-email').value='';document.getElementById('new-pass').value='';loadUsers();}catch(x){alert(x.message)}}
 async function delUser(id){if(!confirm('Delete?'))return;await fetch('/api/users/'+id,{method:'DELETE'});loadUsers()}
-async function loadReferrals(){try{const r=await fetch('/api/referral/stats');const data=await r.json();const total=data.reduce((s,r)=>s+r.count,0);document.getElementById('ref-total').textContent=total;document.getElementById('ref-top').textContent=data.length>0?data[0].referrer+' ('+data[0].count+')':'-';document.getElementById('referral-list').innerHTML=data.length>0?data.map(r=>`<tr><td>${r.referrer}</td><td>${r.count}</td></tr>`).join(''):'<tr><td colspan="2" style="text-align:center;color:#7a7a8a">No referrals</td></tr>';}catch(e){}}
+async function loadReferrals(){try{const r=await fetch('/api/referral/stats');const d=await r.json();const t=d.reduce((s,r)=>s+r.count,0);document.getElementById('ref-total').textContent=t;document.getElementById('ref-top').textContent=d.length?d[0].referrer+' ('+d[0].count+')':'-';document.getElementById('referral-list').innerHTML=d.length?d.map(r=>`<tr><td>${r.referrer}</td><td>${r.count}</td></tr>`).join(''):'<tr><td colspan="2" style="text-align:center;color:#7a7a8a">No referrals</td></tr>';}catch(e){}}
+
+// Settings
 async function loadConfig(){try{const r=await fetch('/api/config');const d=await r.json();if(d.nvidia_api_keys){document.getElementById('cfg-apikey').value=Array.isArray(d.nvidia_api_keys)?d.nvidia_api_keys[0]:d.nvidia_api_key||''}if(d.google_client_id)document.getElementById('cfg-google-id').value=d.google_client_id;if(d.google_client_secret)document.getElementById('cfg-google-secret').value=d.google_client_secret;}catch(e){}}
-async function saveConfig(){const apikey=document.getElementById('cfg-apikey').value.trim();const gid=document.getElementById('cfg-google-id').value.trim();const gsecret=document.getElementById('cfg-google-secret').value.trim();await fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nvidia_api_keys:apikey?[apikey]:[],google_client_id:gid,google_client_secret:gsecret})});alert('Saved');}
-fetchStats();fetchWorkers();fetchActivity();loadUsers();loadConfig();loadReferrals();
-setInterval(()=>{fetchStats();fetchWorkers();fetchActivity()},5000);
+async function saveConfig(){const k=document.getElementById('cfg-apikey').value.trim(),g=document.getElementById('cfg-google-id').value.trim(),s=document.getElementById('cfg-google-secret').value.trim();await fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nvidia_api_keys:k?[k]:[],google_client_id:g,google_client_secret:s})});alert('Saved');}
+
+// Init
+fetchStats();fetchWorkers();fetchActivity();loadConfig();
+setInterval(()=>{fetchStats();fetchWorkers()},5000);
 </script>
 </body>
 </html>
