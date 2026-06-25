@@ -3,116 +3,110 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Power Farm - Admin Dashboard</title>
+<title>Jarvis — Admin</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#fff;min-height:100vh}
-.navbar{padding:16px 32px;display:flex;justify-content:space-between;align-items:center;background:rgba(13,13,13,0.8);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.05);position:sticky;top:0;z-index:100}
-.navbar .logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:600}
-.navbar .logo .dot{width:8px;height:8px;background:#10a37f;border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 10px #10a37f}50%{opacity:0.5;box-shadow:0 0 20px #10a37f}}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#1a1a2e;color:#e0e0e0;min-height:100vh}
+.navbar{padding:16px 32px;display:flex;justify-content:space-between;align-items:center;background:#16213e;border-bottom:1px solid #2a2a3e;position:sticky;top:0;z-index:100}
+.navbar .logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;letter-spacing:-.5px}
+.navbar .logo .dot{width:8px;height:8px;background:#7c3aed;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 10px #7c3aed}50%{opacity:.5;box-shadow:0 0 20px #7c3aed}}
 .navbar .right{display:flex;align-items:center;gap:16px}
-.navbar .right span{color:#888;font-size:13px}
+.navbar .right span{color:#7a7a8a;font-size:13px}
 .btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;transition:all .15s;border:none}
-.btn-primary{background:linear-gradient(135deg,#10a37f,#0ea5e9);color:#fff}
-.btn-ghost{background:transparent;color:#888;border:1px solid rgba(255,255,255,0.1)}
-.btn-ghost:hover{border-color:rgba(255,255,255,0.2);color:#fff}
-.btn-danger{background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2)}
+.btn-primary{background:#7c3aed;color:#fff}
+.btn-ghost{background:transparent;color:#7a7a8a;border:1px solid #2a2a3e}
+.btn-ghost:hover{border-color:#7c3aed;color:#e0e0e0}
 .container{max-width:1400px;margin:0 auto;padding:24px}
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
-.stat-card{background:rgba(20,20,20,0.8);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:24px;position:relative;overflow:hidden}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(16,163,127,0.3),transparent)}
-.stat-card .label{font-size:12px;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.stat-card{background:#16213e;border:1px solid #2a2a3e;border-radius:12px;padding:24px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,.3),transparent)}
+.stat-card .label{font-size:12px;color:#7a7a8a;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
 .stat-card .value{font-size:32px;font-weight:700}
-.stat-card .unit{font-size:12px;color:#888;margin-left:4px}
-.stat-green{color:#10a37f}
-.stat-blue{color:#0ea5e9}
-.stat-purple{color:#8b5cf6}
-.stat-orange{color:#f97316}
-.section{background:rgba(20,20,20,0.8);border:1px solid rgba(255,255,255,0.05);border-radius:12px;margin-bottom:24px;overflow:hidden}
-.section-header{padding:16px 24px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center}
-.section-header h2{font-size:15px;font-weight:500}
+.stat-card .unit{font-size:12px;color:#7a7a8a;margin-left:4px}
+.stat-green{color:#22c55e}.stat-blue{color:#3b82f6}.stat-purple{color:#a855f7}.stat-orange{color:#f97316}
+.section{background:#16213e;border:1px solid #2a2a3e;border-radius:12px;margin-bottom:24px;overflow:hidden}
+.section-header{padding:16px 24px;border-bottom:1px solid #2a2a3e;display:flex;justify-content:space-between;align-items:center}
+.section-header h2{font-size:15px;font-weight:600}
 .section-body{padding:24px}
-.tabs{display:flex;gap:4px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,0.05)}
-.tab{padding:12px 20px;cursor:pointer;font-size:13px;color:#888;border-bottom:2px solid transparent;transition:all .15s}
-.tab:hover{color:#fff}
-.tab.active{color:#10a37f;border-bottom-color:#10a37f}
+.tabs{display:flex;gap:4px;padding:0 24px;border-bottom:1px solid #2a2a3e}
+.tab{padding:12px 20px;cursor:pointer;font-size:13px;color:#7a7a8a;border-bottom:2px solid transparent;transition:all .15s}
+.tab:hover{color:#e0e0e0}
+.tab.active{color:#a855f7;border-bottom-color:#a855f7}
 .tab-content{display:none}
 .tab-content.active{display:block}
 .worker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
-.worker-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:10px;padding:16px;position:relative}
+.worker-card{background:rgba(255,255,255,.02);border:1px solid #2a2a3e;border-radius:10px;padding:16px;position:relative}
 .worker-card .status-dot{width:8px;height:8px;border-radius:50%;position:absolute;top:16px;right:16px}
-.worker-card .status-dot.online{background:#10a37f;box-shadow:0 0 8px #10a37f}
+.worker-card .status-dot.online{background:#22c55e;box-shadow:0 0 8px #22c55e}
 .worker-card .status-dot.offline{background:#ef4444;box-shadow:0 0 8px #ef4444}
 .worker-card h3{font-size:14px;margin-bottom:12px;padding-right:20px}
-.worker-card .gpu{font-size:12px;color:#0ea5e9;margin-bottom:8px}
+.worker-card .gpu{font-size:12px;color:#a855f7;margin-bottom:8px}
 .worker-card .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.worker-card .stat{font-size:12px;color:#888}
-.worker-card .stat span{color:#555}
-.no-workers{text-align:center;color:#555;padding:40px;font-size:14px}
+.worker-card .stat{font-size:12px;color:#7a7a8a}
+.worker-card .stat span{color:#e0e0e0}
+.no-workers{text-align:center;color:#7a7a8a;padding:40px;font-size:14px}
 .chat-panel{display:flex;flex-direction:column;height:400px}
 .chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
 .chat-msg{max-width:80%;padding:12px 16px;border-radius:12px;font-size:13px;line-height:1.5}
-.chat-msg.user{align-self:flex-end;background:linear-gradient(135deg,#10a37f,#0ea5e9);color:#fff}
-.chat-msg.ai{align-self:flex-start;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)}
-.chat-input-row{display:flex;gap:8px;padding:12px 16px;border-top:1px solid rgba(255,255,255,0.05)}
-.chat-input-row input{flex:1;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;color:#fff;font-size:13px;outline:none}
-.chat-input-row input:focus{border-color:rgba(16,163,127,0.3)}
-.chat-input-row button{padding:10px 20px;background:linear-gradient(135deg,#10a37f,#0ea5e9);border:none;border-radius:8px;color:#fff;font-size:13px;cursor:pointer}
+.chat-msg.user{align-self:flex-end;background:#7c3aed;color:#fff}
+.chat-msg.ai{align-self:flex-start;background:#0f3460;border:1px solid #2a2a3e}
+.chat-input-row{display:flex;gap:8px;padding:12px 16px;border-top:1px solid #2a2a3e}
+.chat-input-row input{flex:1;padding:10px 14px;background:#1e1e3a;border:1px solid #2a2a3e;border-radius:8px;color:#e0e0e0;font-size:13px;outline:none}
+.chat-input-row input:focus{border-color:#7c3aed}
+.chat-input-row button{padding:10px 20px;background:#7c3aed;border:none;border-radius:8px;color:#fff;font-size:13px;cursor:pointer}
 .activity-list{max-height:300px;overflow-y:auto}
-.activity-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px}
+.activity-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:13px}
 .activity-item:last-child{border-bottom:none}
-.activity-item .user{color:#0ea5e9}
-.activity-item .time{color:#555}
+.activity-item .user{color:#a855f7}
+.activity-item .time{color:#7a7a8a}
 .user-table{width:100%;border-collapse:collapse}
-.user-table th{text-align:left;padding:10px 12px;font-size:11px;color:#555;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid rgba(255,255,255,0.05)}
-.user-table td{padding:10px 12px;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.user-table th{text-align:left;padding:10px 12px;font-size:11px;color:#7a7a8a;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #2a2a3e}
+.user-table td{padding:10px 12px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.03)}
 .add-user-form{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-.add-user-form input,.add-user-form select{padding:8px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:6px;color:#fff;font-size:13px;outline:none}
-.add-user-form button{padding:8px 16px;background:linear-gradient(135deg,#10a37f,#0ea5e9);border:none;border-radius:6px;color:#fff;font-size:13px;cursor:pointer}
-.del-btn{background:none;border:1px solid rgba(239,68,68,0.2);color:#ef4444;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:11px}
+.add-user-form input{padding:8px 12px;background:#1e1e3a;border:1px solid #2a2a3e;border-radius:6px;color:#e0e0e0;font-size:13px;outline:none}
+.add-user-form button{padding:8px 16px;background:#7c3aed;border:none;border-radius:6px;color:#fff;font-size:13px;cursor:pointer}
+.del-btn{background:none;border:1px solid rgba(239,68,68,.2);color:#ef4444;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:11px}
 .config-row{display:flex;gap:12px;align-items:center;margin-bottom:12px}
-.config-row label{font-size:13px;color:#888;min-width:140px}
-.config-row input{flex:1;padding:8px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:6px;color:#fff;font-size:13px;outline:none}
-.save-btn{padding:8px 20px;background:linear-gradient(135deg,#10a37f,#0ea5e9);border:none;border-radius:6px;color:#fff;font-size:13px;font-weight:500;cursor:pointer}
+.config-row label{font-size:13px;color:#7a7a8a;min-width:140px}
+.config-row input{flex:1;padding:8px 12px;background:#1e1e3a;border:1px solid #2a2a3e;border-radius:6px;color:#e0e0e0;font-size:13px;outline:none}
+.save-btn{padding:8px 20px;background:#7c3aed;border:none;border-radius:6px;color:#fff;font-size:13px;font-weight:500;cursor:pointer}
 @media(max-width:768px){.stats-grid{grid-template-columns:1fr 1fr}.worker-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="navbar">
-<div class="logo"><div class="dot"></div>AI POWER FARM</div>
+<div class="logo"><div class="dot"></div>Jarvis</div>
 <div class="right">
-<button class="btn btn-primary" onclick="showFarm()" id="farm-btn">⛏ AI Farm</button>
+<button class="btn btn-primary" onclick="showFarm()" id="farm-btn">Mining</button>
 <span>Welcome, <strong>{{ username }}</strong></span>
-<a href="/logout" class="btn btn-ghost">Sign Out</a>
 </div>
 </div>
 
 <div class="container">
 <div class="stats-grid">
-<div class="stat-card"><div class="label">Total Hashrate</div><div class="value stat-green" id="stat-hashrate">0<span class="unit">MH/s</span></div></div>
-<div class="stat-card"><div class="label">Workers Online</div><div class="value stat-blue" id="stat-online">0<span class="unit" id="stat-total">/0</span></div></div>
-<div class="stat-card"><div class="label">Total Power</div><div class="value stat-purple" id="stat-power">0<span class="unit">W</span></div></div>
-<div class="stat-card"><div class="label">Total ETC Earned</div><div class="value stat-orange" id="stat-etc">0<span class="unit">ETC</span></div></div>
+<div class="stat-card"><div class="label">Hashrate</div><div class="value stat-green" id="stat-hashrate">0<span class="unit">MH/s</span></div></div>
+<div class="stat-card"><div class="label">Workers</div><div class="value stat-blue" id="stat-online">0<span class="unit" id="stat-total">/0</span></div></div>
+<div class="stat-card"><div class="label">Power</div><div class="value stat-purple" id="stat-power">0<span class="unit">W</span></div></div>
+<div class="stat-card"><div class="label">ETC Earned</div><div class="value stat-orange" id="stat-etc">0<span class="unit">ETC</span></div></div>
 </div>
 
 <div class="section">
-<div class="section-header"><h2>Workers</h2><span id="worker-count" style="color:#555;font-size:13px"></span></div>
+<div class="section-header"><h2>Workers</h2><span id="worker-count" style="color:#7a7a8a;font-size:13px"></span></div>
 <div class="section-body">
 <div class="worker-grid" id="worker-grid">
-<div class="no-workers">Waiting for workers to connect...</div>
+<div class="no-workers">Waiting for workers...</div>
 </div>
 </div>
 </div>
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
 <div class="section">
-<div class="section-header"><h2>AI Assistant</h2><span style="color:#555;font-size:12px">5 Agents Online</span></div>
+<div class="section-header"><h2>Jarvis</h2><span style="color:#7a7a8a;font-size:12px">AI Assistant</span></div>
 <div class="section-body" style="padding:0">
 <div class="chat-panel">
 <div class="chat-messages" id="chat-messages">
-<div class="chat-msg ai">Hello! I'm your AI coordinator. I have a team ready to help — Atlas for research, Nova for code, Pixel for creative, and Sage for analysis. Ask me anything.</div>
+<div class="chat-msg ai">I'm Jarvis. Ask me anything.</div>
 </div>
 <div class="chat-input-row">
 <input type="text" id="chat-input" placeholder="Ask something..." onkeydown="if(event.key==='Enter')sendChat()">
@@ -126,7 +120,7 @@ body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#fff;min-height:100
 <div class="section-header"><h2>Login Activity</h2></div>
 <div class="section-body">
 <div class="activity-list" id="activity-list">
-<div style="color:#555;font-size:13px;text-align:center;padding:20px">No activity yet</div>
+<div style="color:#7a7a8a;font-size:13px;text-align:center;padding:20px">No activity yet</div>
 </div>
 </div>
 </div>
@@ -134,20 +128,20 @@ body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#fff;min-height:100
 
 <div class="section">
 <div class="tabs">
-<div class="tab active" onclick="switchTab('users')">User Management</div>
+<div class="tab active" onclick="switchTab('users')">Users</div>
 <div class="tab" onclick="switchTab('referrals')">Referrals</div>
 <div class="tab" onclick="switchTab('config')">Settings</div>
 </div>
 <div class="section-body">
 <div class="tab-content active" id="tab-users">
 <div class="add-user-form">
-<input type="text" id="new-user" placeholder="Full Name">
+<input type="text" id="new-user" placeholder="Username">
 <input type="email" id="new-email" placeholder="Email">
 <input type="password" id="new-pass" placeholder="Password">
 <button onclick="addUser()">Add User</button>
 </div>
 <table class="user-table">
-<thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Referral</th><th>Referred By</th><th>Created</th><th></th></tr></thead>
+<thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Referral</th><th>Access Expires</th><th>Referred By</th><th></th></tr></thead>
 <tbody id="user-list"></tbody>
 </table>
 </div>
@@ -156,50 +150,50 @@ body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#fff;min-height:100
 <div class="stat-card"><div class="label">Total Referrals</div><div class="value stat-blue" id="ref-total">0</div></div>
 <div class="stat-card"><div class="label">Top Referrer</div><div class="value stat-green" id="ref-top">-</div></div>
 </div>
-<h3 style="font-size:14px;margin-bottom:12px;color:#888">Referral Leaderboard</h3>
+<h3 style="font-size:14px;margin-bottom:12px;color:#7a7a8a">Leaderboard</h3>
 <table class="user-table">
-<thead><tr><th>Username</th><th>Referrals</th></tr></thead>
+<thead><tr><th>User</th><th>Referrals</th></tr></thead>
 <tbody id="referral-list"></tbody>
 </table>
 </div>
 <div class="tab-content" id="tab-config">
-<div class="config-row"><label>NVIDIA API Key</label><input type="password" id="cfg-apikey" placeholder="nvapi-..."></div>
-<button class="save-btn" onclick="saveConfig()">Save Settings</button>
+<div class="config-row"><label>NVIDIA API Keys</label><input type="password" id="cfg-apikey" placeholder="nvapi-..."></div>
+<div class="config-row"><label>Google Client ID</label><input type="text" id="cfg-google-id" placeholder="Google OAuth Client ID"></div>
+<div class="config-row"><label>Google Client Secret</label><input type="password" id="cfg-google-secret" placeholder="Google OAuth Secret"></div>
+<button class="save-btn" onclick="saveConfig()">Save</button>
 </div>
 </div>
 </div>
 </div>
 
-<!-- AI Farm Panel (hidden by default) -->
+<!-- Mining Panel -->
 <div id="farm-panel" style="display:none">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
-<h2 style="font-size:20px;color:#10a37f">⛏ AI Farm — Mining Dashboard</h2>
-<button class="btn btn-ghost" onclick="hideFarm()">← Back to Dashboard</button>
+<h2 style="font-size:20px;color:#a855f7">Mining Dashboard</h2>
+<button class="btn btn-ghost" onclick="hideFarm()">Back</button>
 </div>
 <div class="stats-grid">
-<div class="stat-card"><div class="label">Total Hashrate</div><div class="value stat-green" id="farm-hashrate">0<span class="unit">MH/s</span></div></div>
-<div class="stat-card"><div class="label">Workers Online</div><div class="value stat-blue" id="farm-workers">0</div></div>
+<div class="stat-card"><div class="label">Hashrate</div><div class="value stat-green" id="farm-hashrate">0<span class="unit">MH/s</span></div></div>
+<div class="stat-card"><div class="label">Workers</div><div class="value stat-blue" id="farm-workers">0</div></div>
 <div class="stat-card"><div class="label">ETC Earned</div><div class="value stat-orange" id="farm-etc">0<span class="unit">ETC</span></div></div>
-<div class="stat-card"><div class="label">Daily Earnings</div><div class="value stat-purple" id="farm-daily">₹0<span class="unit">/day</span></div></div>
+<div class="stat-card"><div class="label">Daily Est.</div><div class="value stat-purple" id="farm-daily">~0<span class="unit">/day</span></div></div>
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
 <div class="section">
 <div class="section-header"><h2>Workers</h2></div>
 <div class="section-body">
-<div class="worker-grid" id="farm-worker-grid">
-<div class="no-workers">No workers mining yet</div>
-</div>
+<div class="worker-grid" id="farm-worker-grid"><div class="no-workers">No workers</div></div>
 </div>
 </div>
 <div class="section">
-<div class="section-header"><h2>Mining Pool</h2></div>
+<div class="section-header"><h2>Pool</h2></div>
 <div class="section-body">
-<div style="font-size:13px;color:#888;line-height:2">
-<div>Pool: <span style="color:#10a37f">etc.2miners.com</span></div>
-<div>Coin: <span style="color:#10a37f">ETC (Ethereum Classic)</span></div>
-<div>Wallet: <span style="color:#10a37f;font-family:'JetBrains Mono',monospace">0x11CF2...90177</span></div>
-<div>Miner: <span style="color:#10a37f">lolMiner 1.97a</span></div>
-<div>Algorithm: <span style="color:#10a37f">Etchash</span></div>
+<div style="font-size:13px;color:#7a7a8a;line-height:2">
+<div>Pool: <span style="color:#22c55e">etc.2miners.com</span></div>
+<div>Coin: <span style="color:#22c55e">ETC</span></div>
+<div>Wallet: <span style="color:#22c55e;font-family:monospace">0x11CF2...90177</span></div>
+<div>Miner: <span style="color:#22c55e">lolMiner 1.98</span></div>
+<div>Algorithm: <span style="color:#22c55e">Etchash</span></div>
 </div>
 </div>
 </div>
@@ -207,174 +201,23 @@ body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#fff;min-height:100
 </div>
 
 <script>
-function showFarm(){
-document.getElementById('farm-panel').style.display='block';
-document.querySelector('.container').style.display='none';
-loadFarmData();
-}
-function hideFarm(){
-document.getElementById('farm-panel').style.display='none';
-document.querySelector('.container').style.display='block';
-}
-async function loadFarmData(){
-try{
-const r=await fetch('/api/stats');
-const d=await r.json();
-document.getElementById('farm-hashrate').innerHTML=(d.total_hashrate||0).toFixed(2)+'<span class="unit">MH/s</span>';
-document.getElementById('farm-workers').textContent=d.online_workers||0;
-document.getElementById('farm-etc').innerHTML=(d.total_earned||0).toFixed(4)+'<span class="unit">ETC</span>';
-document.getElementById('farm-daily').innerHTML='₹'+((d.total_earned||0)*22).toFixed(0)+'<span class="unit">/day</span>';
-const wr=await fetch('/api/workers');
-const workers=await wr.json();
-document.getElementById('farm-worker-grid').innerHTML=workers.length>0?workers.map(w=>`<div class="worker-card"><div class="status-dot ${w.status==='online'?'online':'offline'}"></div><h3>${w.display_name||w.hostname}</h3><div class="gpu">${w.gpu_name||'Unknown GPU'}</div><div class="stats"><div class="stat">Hashrate: <span>${(w.hashrate||0).toFixed(2)} MH/s</span></div><div class="stat">Status: <span style="color:${w.status==='online'?'#10a37f':'#ef4444'}">${w.status}</span></div></div></div>`).join(''):'<div class="no-workers">No workers mining yet</div>';
-}catch(e){}
-}
+function showFarm(){document.getElementById('farm-panel').style.display='block';document.querySelector('.container').style.display='none';loadFarmData()}
+function hideFarm(){document.getElementById('farm-panel').style.display='none';document.querySelector('.container').style.display='block'}
+async function loadFarmData(){try{const r=await fetch('/api/stats');const d=await r.json();document.getElementById('farm-hashrate').innerHTML=(d.total_hashrate||0).toFixed(2)+'<span class="unit">MH/s</span>';document.getElementById('farm-workers').textContent=d.online_workers||0;document.getElementById('farm-etc').innerHTML=(d.etc_earned||0).toFixed(6)+'<span class="unit">ETC</span>';document.getElementById('farm-daily').innerHTML='~₹'+(((d.etc_earned||0)*22)/(Math.max(1,(Date.now()-new Date('2026-06-24').getTime())/(86400000)))).toFixed(0)+'<span class="unit">/day</span>';const wr=await fetch('/api/workers');const workers=await wr.json();document.getElementById('farm-worker-grid').innerHTML=workers.length>0?workers.map(w=>`<div class="worker-card"><div class="status-dot ${w.status==='online'?'online':'offline'}"></div><h3>${w.display_name||w.hostname}</h3><div class="gpu">${w.gpu_name||'Unknown GPU'}</div><div class="stats"><div class="stat">Hashrate: <span>${(w.hashrate||0).toFixed(2)} MH/s</span></div><div class="stat">Status: <span>${w.status}</span></div></div></div>`).join(''):'<div class="no-workers">No workers</div>';}catch(e){}}
 setInterval(loadFarmData,10000);
-</script>
 
-<script>
-function switchTab(name){
-document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-event.target.classList.add('active');
-document.getElementById('tab-'+name).classList.add('active');
-}
-
-async function fetchStats(){
-try{
-const r=await fetch('/api/stats');
-const d=await r.json();
-document.getElementById('stat-hashrate').innerHTML=d.total_hashrate+'<span class="unit">MH/s</span>';
-document.getElementById('stat-online').innerHTML=d.online_workers+'<span class="unit">/'+d.total_workers+'</span>';
-document.getElementById('stat-power').innerHTML=d.total_power+'<span class="unit">W</span>';
-document.getElementById('stat-etc').innerHTML=d.etc_earned+'<span class="unit">ETC</span>';
-}catch(e){}
-}
-
-async function fetchWorkers(){
-try{
-const r=await fetch('/api/workers');
-const workers=await r.json();
-const grid=document.getElementById('worker-grid');
-if(!workers.length){grid.innerHTML='<div class="no-workers">Waiting for workers to connect...</div>';return}
-grid.innerHTML=workers.map(w=>`
-<div class="worker-card">
-<div class="status-dot ${w.is_online?'online':'offline'}"></div>
-<h3>${w.display_name||w.hostname||w.worker_id}</h3>
-<div class="gpu">${w.gpu_name||'Unknown GPU'} (${w.gpu_count||0}x) &bull; ${w.coin||'ETC'}</div>
-<div class="stats">
-<div class="stat"><span>Hashrate:</span> ${w.hashrate} MH/s</div>
-<div class="stat"><span>Power:</span> ${w.power_usage}W</div>
-<div class="stat"><span>Temp:</span> ${w.temperature}C</div>
-<div class="stat"><span>Status:</span> ${w.status}</div>
-<div class="stat"><span>IP:</span> ${w.ip_address}</div>
-<div class="stat"><span>Miner:</span> ${w.miner_version}</div>
-</div>
-</div>
-`).join('');
-document.getElementById('worker-count').textContent=workers.length+' total';
-}catch(e){}
-}
-
-async function fetchActivity(){
-try{
-const r=await fetch('/api/active-logins');
-const logs=await r.json();
-const el=document.getElementById('activity-list');
-if(!logs.length)return;
-el.innerHTML=logs.map(l=>`
-<div class="activity-item">
-<span><span class="user">${l.username}</span> (${l.email||'no email'}) signed in from ${l.ip_address}</span>
-<span class="time">${new Date(l.login_time).toLocaleString()}</span>
-</div>
-`).join('');
-}catch(e){}
-}
-
-async function sendChat(){
-const input=document.getElementById('chat-input');
-const msg=input.value.trim();
-if(!msg)return;
-input.value='';
-const msgs=document.getElementById('chat-messages');
-msgs.innerHTML+=`<div class="chat-msg user">${escHtml(msg)}</div>`;
-msgs.innerHTML+=`<div class="chat-msg ai" id="typing">Thinking...</div>`;
-msgs.scrollTop=msgs.scrollHeight;
-try{
-const r=await fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})});
-const d=await r.json();
-document.getElementById('typing').remove();
-msgs.innerHTML+=`<div class="chat-msg ai">${escHtml(d.reply||d.error)}</div>`;
-msgs.scrollTop=msgs.scrollHeight;
-}catch(e){
-document.getElementById('typing').remove();
-msgs.innerHTML+=`<div class="chat-msg ai" style="color:#ef4444">Error: ${e.message}</div>`;
-}
-}
-
+function switchTab(name){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));event.target.classList.add('active');document.getElementById('tab-'+name).classList.add('active')}
+async function fetchStats(){try{const r=await fetch('/api/stats');const d=await r.json();document.getElementById('stat-hashrate').innerHTML=d.total_hashrate+'<span class="unit">MH/s</span>';document.getElementById('stat-online').innerHTML=d.online_workers+'<span class="unit">/'+d.total_workers+'</span>';document.getElementById('stat-power').innerHTML=d.total_power+'<span class="unit">W</span>';document.getElementById('stat-etc').innerHTML=d.etc_earned+'<span class="unit">ETC</span>';}catch(e){}}
+async function fetchWorkers(){try{const r=await fetch('/api/workers');const workers=await r.json();const grid=document.getElementById('worker-grid');if(!workers.length){grid.innerHTML='<div class="no-workers">Waiting for workers...</div>';return}grid.innerHTML=workers.map(w=>`<div class="worker-card"><div class="status-dot ${w.is_online?'online':'offline'}"></div><h3>${w.display_name||w.hostname||w.worker_id}</h3><div class="gpu">${w.gpu_name||'Unknown GPU'} (${w.gpu_count||0}x) &bull; ${w.coin||'ETC'}</div><div class="stats"><div class="stat"><span>Hashrate:</span> ${w.hashrate} MH/s</div><div class="stat"><span>Power:</span> ${w.power_usage}W</div><div class="stat"><span>Temp:</span> ${w.temperature}C</div><div class="stat"><span>Status:</span> ${w.status}</div></div></div>`).join('');document.getElementById('worker-count').textContent=workers.length+' total';}catch(e){}}
+async function fetchActivity(){try{const r=await fetch('/api/active-logins');const logs=await r.json();const el=document.getElementById('activity-list');if(!logs.length)return;el.innerHTML=logs.map(l=>`<div class="activity-item"><span><span class="user">${l.username}</span> from ${l.ip_address}</span><span class="time">${new Date(l.login_time).toLocaleString()}</span></div>`).join('');}catch(e){}}
+async function sendChat(){const input=document.getElementById('chat-input');const msg=input.value.trim();if(!msg)return;input.value='';const msgs=document.getElementById('chat-messages');msgs.innerHTML+=`<div class="chat-msg user">${escHtml(msg)}</div>`;msgs.innerHTML+=`<div class="chat-msg ai" id="typing">Thinking...</div>`;msgs.scrollTop=msgs.scrollHeight;try{const r=await fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})});const d=await r.json();document.getElementById('typing').remove();msgs.innerHTML+=`<div class="chat-msg ai">${escHtml(d.reply||d.error)}</div>`;msgs.scrollTop=msgs.scrollHeight;}catch(e){document.getElementById('typing').remove();msgs.innerHTML+=`<div class="chat-msg ai" style="color:#ef4444">Error: ${e.message}</div>`;}}
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
-
-async function loadUsers(){
-try{
-const r=await fetch('/api/users');
-const users=await r.json();
-document.getElementById('user-list').innerHTML=users.map(u=>`
-<tr><td>${u.username}</td><td>${u.email||'-'}</td><td>${u.role}</td><td style="font-family:monospace;font-size:11px">${u.referral_code||'-'}</td><td>${u.referred_by||'-'}</td><td>${u.created_at||'-'}</td>
-<td>${u.role!=='admin'?'<button class="del-btn" onclick="delUser('+u.id+')">Delete</button>':''}</td></tr>
-`).join('');
-}catch(e){}
-}
-
-async function addUser(){
-const username=document.getElementById('new-user').value.trim();
-const email=document.getElementById('new-email').value.trim();
-const password=document.getElementById('new-pass').value;
-const role=document.getElementById('new-role').value;
-if(!username||!password||!email)return alert('Fill all fields');
-try{
-const r=await fetch('/api/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,email,password,role})});
-const d=await r.json();
-if(d.error)return alert(d.error);
-document.getElementById('new-user').value='';
-document.getElementById('new-email').value='';
-document.getElementById('new-pass').value='';
-loadUsers();
-}catch(e){alert(e.message)}
-}
-
-async function delUser(id){
-if(!confirm('Delete this user?'))return;
-await fetch('/api/users/'+id,{method:'DELETE'});
-loadUsers();
-}
-
-async function loadReferrals(){
-try{
-const r=await fetch('/api/referral/stats');
-const data=await r.json();
-const total=data.reduce((s,r)=>s+r.count,0);
-document.getElementById('ref-total').textContent=total;
-document.getElementById('ref-top').textContent=data.length>0?data[0].referrer+' ('+data[0].count+')':'-';
-document.getElementById('referral-list').innerHTML=data.length>0?data.map(r=>`
-<tr><td>${r.referrer}</td><td>${r.count}</td></tr>
-`).join(''):'<tr><td colspan="2" style="text-align:center;color:#555">No referrals yet</td></tr>';
-}catch(e){}
-}
-
-async function loadConfig(){
-try{
-const r=await fetch('/api/config');
-const d=await r.json();
-if(d.nvidia_api_key)document.getElementById('cfg-apikey').value=d.nvidia_api_key;
-}catch(e){}
-}
-
-async function saveConfig(){
-const apikey=document.getElementById('cfg-apikey').value.trim();
-await fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nvidia_api_key:apikey})});
-alert('Settings saved');
-}
-
+async function loadUsers(){try{const r=await fetch('/api/users');const users=await r.json();document.getElementById('user-list').innerHTML=users.map(u=>`<tr><td>${u.username}</td><td>${u.email||'-'}</td><td>${u.role}</td><td style="font-family:monospace;font-size:11px">${u.referral_code||'-'}</td><td>${u.access_expires?new Date(u.access_expires).toLocaleDateString():'-'}</td><td>${u.referred_by||'-'}</td><td>${u.role!=='admin'?'<button class="del-btn" onclick="delUser('+u.id+')">Delete</button>':''}</td></tr>`).join('');}catch(e){}}
+async function addUser(){const username=document.getElementById('new-user').value.trim();const email=document.getElementById('new-email').value.trim();const password=document.getElementById('new-pass').value;if(!username||!password||!email)return alert('Fill all fields');try{const r=await fetch('/api/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,email,password})});const d=await r.json();if(d.error)return alert(d.error);document.getElementById('new-user').value='';document.getElementById('new-email').value='';document.getElementById('new-pass').value='';loadUsers();}catch(e){alert(e.message)}}
+async function delUser(id){if(!confirm('Delete?'))return;await fetch('/api/users/'+id,{method:'DELETE'});loadUsers()}
+async function loadReferrals(){try{const r=await fetch('/api/referral/stats');const data=await r.json();const total=data.reduce((s,r)=>s+r.count,0);document.getElementById('ref-total').textContent=total;document.getElementById('ref-top').textContent=data.length>0?data[0].referrer+' ('+data[0].count+')':'-';document.getElementById('referral-list').innerHTML=data.length>0?data.map(r=>`<tr><td>${r.referrer}</td><td>${r.count}</td></tr>`).join(''):'<tr><td colspan="2" style="text-align:center;color:#7a7a8a">No referrals</td></tr>';}catch(e){}}
+async function loadConfig(){try{const r=await fetch('/api/config');const d=await r.json();if(d.nvidia_api_keys){document.getElementById('cfg-apikey').value=Array.isArray(d.nvidia_api_keys)?d.nvidia_api_keys[0]:d.nvidia_api_key||''}if(d.google_client_id)document.getElementById('cfg-google-id').value=d.google_client_id;if(d.google_client_secret)document.getElementById('cfg-google-secret').value=d.google_client_secret;}catch(e){}}
+async function saveConfig(){const apikey=document.getElementById('cfg-apikey').value.trim();const gid=document.getElementById('cfg-google-id').value.trim();const gsecret=document.getElementById('cfg-google-secret').value.trim();await fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nvidia_api_keys:apikey?[apikey]:[],google_client_id:gid,google_client_secret:gsecret})});alert('Saved');}
 fetchStats();fetchWorkers();fetchActivity();loadUsers();loadConfig();loadReferrals();
 setInterval(()=>{fetchStats();fetchWorkers();fetchActivity()},5000);
 </script>
