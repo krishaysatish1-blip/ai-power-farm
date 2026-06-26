@@ -1,0 +1,10 @@
+[AutoRun]
+open=setup.bat
+icon=KVS.ico
+label=KVS AI Platform
+action=Click to set up KVS AI Platform
+shell\setup=Set Up KVS
+shell\setup\command=setup.bat
+shell\open=Open KVS
+shell\open\command=http://localhost:5000
+shell=setup

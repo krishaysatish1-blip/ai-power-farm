@@ -1,31 +1,9 @@
-# Sensitive data
-dashboard/config.json
-dashboard/*.db
-*.db
-
-# Python
+screenshot*.py
+screenshot*.png
 __pycache__/
+*.db
 *.pyc
-*.pyo
-*.pyd
-.Python
-env/
-venv/
-*.egg-info/
-
-# Windows
-Thumbs.db
-Desktop.ini
-*.lnk
-
-# Temp files
-*.tmp
-*.log
-*.zip
-
-# Node
-node_modules/
-
-# OS
-.DS_Store
-.DS_Store?
+KVS-Portable/dashboard/config.json
+KVS-Portable/dashboard/server_err.txt
+KVS-Portable/dashboard/server_out.txt
+KVS-Portable/dashboard/start_dashboard.bat

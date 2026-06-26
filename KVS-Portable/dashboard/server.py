@@ -300,28 +300,25 @@ def logout():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        try:
-            username = request.form.get("username", "")
-            email = request.form.get("email", "")
-            password = request.form.get("password", "")
-            ref_code = request.form.get("referral_code", "").strip()
-            if not username or not password:
-                return render_template("register.html", error="All fields required")
-            if not email:
-                return render_template("register.html", error="Email is required")
-            if not ref_code:
-                return render_template("register.html", error="Referral code is required. Ask a friend for theirs.")
-            if len(username) < 3:
-                return render_template("register.html", error="Username must be 3+ characters")
-            if len(password) < 6:
-                return render_template("register.html", error="Password must be 6+ characters")
+        username = request.form.get("username", "")
+        email = request.form.get("email", "")
+        password = request.form.get("password", "")
+        ref_code = request.form.get("referral_code", "").strip()
+        if not username or not password:
+            return render_template("register.html", error="All fields required")
+        if not email:
+            return render_template("register.html", error="Email is required")
+        if not ref_code:
+            return render_template("register.html", error="Referral code is required. Ask a friend for theirs.")
+        if len(username) < 3:
+            return render_template("register.html", error="Username must be 3+ characters")
+        if len(password) < 6:
+            return render_template("register.html", error="Password must be 6+ characters")
 
-            user = create_user(username=username, email=email, password=password, referral_code=ref_code)
-            if user:
-                return render_template("register.html", success="Account created! You can now sign in.")
-            return render_template("register.html", error="Username already exists")
-        except Exception as e:
-            return render_template("register.html", error=str(e))
+        user = create_user(username=username, email=email, password=password, referral_code=ref_code)
+        if user:
+            return render_template("register.html", success="Account created! You can now sign in.")
+        return render_template("register.html", error="Username already exists")
     return render_template("register.html")
 
 @app.route("/")
@@ -658,32 +655,29 @@ def delete_user(user_id):
 @app.route("/api/referral", methods=["GET"])
 @login_required
 def get_referral():
-    try:
-        conn = get_db()
-        user = conn.execute("SELECT referral_code, access_expires FROM users WHERE id = ?", (session["user_id"],)).fetchone()
-        if not user:
-            conn.close()
-            return jsonify({"error": "user not found"}), 404
-
-        code = user["referral_code"]
-        if not code:
-            code = generate_referral_code(session["username"])
-            conn.execute("UPDATE users SET referral_code = ? WHERE id = ?", (code, session["user_id"]))
-            conn.commit()
-
-        referrals = conn.execute("SELECT COUNT(*) as cnt FROM users WHERE referred_by = ?", (session["username"],)).fetchone()
-        referral_list = conn.execute("SELECT username, created_at FROM users WHERE referred_by = ? ORDER BY created_at DESC", (session["username"],)).fetchall()
+    conn = get_db()
+    user = conn.execute("SELECT referral_code, access_expires FROM users WHERE id = ?", (session["user_id"],)).fetchone()
+    if not user:
         conn.close()
+        return jsonify({"error": "user not found"}), 404
 
-        return jsonify({
-            "referral_code": code,
-            "referral_link": f"http://localhost:5000/register?ref={code}",
-            "total_referrals": referrals["cnt"],
-            "days_remaining": str(user["access_expires"]) if user["access_expires"] else "?",
-            "referrals": [{"username": r["username"], "joined": str(r["created_at"])} for r in referral_list]
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    code = user["referral_code"]
+    if not code:
+        code = generate_referral_code(session["username"])
+        conn.execute("UPDATE users SET referral_code = ? WHERE id = ?", (code, session["user_id"]))
+        conn.commit()
+
+    referrals = conn.execute("SELECT COUNT(*) as cnt FROM users WHERE referred_by = ?", (session["username"],)).fetchone()
+    referral_list = conn.execute("SELECT username, created_at FROM users WHERE referred_by = ? ORDER BY created_at DESC", (session["username"],)).fetchall()
+    conn.close()
+
+    return jsonify({
+        "referral_code": code,
+        "referral_link": f"http://localhost:5000/register?ref={code}",
+        "total_referrals": referrals["cnt"],
+        "days_remaining": user.get("access_expires", "?"),
+        "referrals": [{"username": r["username"], "joined": r["created_at"]} for r in referral_list]
+    })
 
 @app.route("/api/referral/stats", methods=["GET"])
 @login_required
