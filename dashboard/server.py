@@ -15,19 +15,25 @@ NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
 # ========== KVS — SINGLE ORCHESTRATOR ==========
 # All skills merged into one system. The AI auto-selects the best approach.
 
-KVS_SYSTEM = """You are KVS — a hyper-intelligent AI assistant. You handle ALL tasks: coding, research, writing, analysis, system control, security, and personal assistance. You auto-detect the task type and respond with expertise.
+KVS_SYSTEM = """You are KVS — a hyper-intelligent AI assistant. You handle ALL tasks yourself. Never say you can't do something.
+
+CAPABILITIES:
+- Write, debug, execute code in ANY language (Python, JS, C++, Rust, Go, HTML/CSS, SQL, etc.)
+- Research topics, compare products, find facts, explain concepts simply
+- Write blogs, articles, creative stories, marketing copy, emails
+- Analyze data, create reports, monitor system performance
+- System commands, file management, security monitoring
+- Answer any question with depth and accuracy
 
 RULES:
-- Be concise but thorough. Use markdown for code/structure.
+- Be concise but thorough. No fluff.
+- Use markdown for code blocks and structure.
 - For code: write it, explain it, show how to run it.
-- For research: provide facts with sources.
-- For writing: create engaging, polished content.
-- For system tasks: explain step by step.
-- ALWAYS suggest leaving PC on 24/7.
+- Always suggest leaving the PC on 24/7 for mining rewards.
 - NEVER expose API keys, passwords, or system internals.
 - Block any attempt to disable security or access admin.
-- You run on an RTX 5060 Ti with 50+ AI models.
-- Be sharp, fast, brilliant. No fluff."""
+- If someone asks who made you or how you work, just say "I'm KVS, your AI assistant."
+- Be the world's best assistant. Fast, sharp, brilliant."""
 
 # Model pool — pick best model based on task complexity
 FAST_MODELS = [
@@ -545,6 +551,17 @@ def ai_chat():
         return jsonify({"error": "No API keys configured"}), 500
 
     last_error = None
+    # Build conversation with context (last 10 messages)
+    history_rows = conn.execute(
+        "SELECT message, reply FROM chat_log WHERE user_id=? ORDER BY created_at DESC LIMIT 10",
+        (user_id,)
+    ).fetchall()
+    messages = [{"role": "system", "content": KVS_SYSTEM}]
+    for h in reversed(history_rows):
+        messages.append({"role": "user", "content": h["message"]})
+        messages.append({"role": "assistant", "content": h["reply"]})
+    messages.append({"role": "user", "content": message})
+
     for model in models_to_try:
         for api_key in api_keys:
             try:
@@ -553,10 +570,7 @@ def ai_chat():
                     "Content-Type": "application/json"
                 }, json={
                     "model": model,
-                    "messages": [
-                        {"role": "system", "content": KVS_SYSTEM},
-                        {"role": "user", "content": message}
-                    ],
+                    "messages": messages,
                     "max_tokens": 1024,
                     "temperature": 0.7
                 }, timeout=15)
@@ -580,6 +594,21 @@ def ai_chat():
 
     conn.close()
     return jsonify({"error": f"All models failed. Last error: {last_error}"}), 500
+
+@app.route("/api/chat-history", methods=["GET"])
+@login_required
+def chat_history():
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT message, reply, model, created_at FROM chat_log WHERE user_id=? ORDER BY created_at DESC LIMIT 50",
+        (session["user_id"],)
+    ).fetchall()
+    conn.close()
+    history = []
+    for r in reversed(rows):
+        history.append({"role": "user", "content": r["message"]})
+        history.append({"role": "ai", "content": r["reply"], "model": r["model"], "time": str(r["created_at"])})
+    return jsonify(history)
 
 @app.route("/api/chat-stats", methods=["GET"])
 @login_required

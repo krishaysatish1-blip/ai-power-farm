@@ -261,6 +261,22 @@ fetch('/api/referral').then(r=>r.json()).then(d=>{
     document.getElementById('days-badge').textContent=days+'d remaining';
   }
 });
+
+// Load chat history
+fetch('/api/chat-history').then(r=>r.json()).then(msgs=>{
+  if(msgs.length){
+    const m=document.getElementById('messages');
+    m.innerHTML='';
+    msgs.forEach(msg=>{
+      if(msg.role==='user'){
+        m.innerHTML+=`<div class="msg user">${esc(msg.content)}</div>`;
+      }else{
+        m.innerHTML+=`<div class="msg ai">${formatAI(msg.content)}<span class="model-tag">${msg.model||''}</span></div>`;
+      }
+    });
+    m.scrollTop=m.scrollHeight;
+  }
+});
 </script>
 </body>
 </html>
